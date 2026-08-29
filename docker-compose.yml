@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: github-assistant-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: github_assistant
+      POSTGRES_PASSWORD: github_assistant_dev
+      POSTGRES_DB: github_assistant
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

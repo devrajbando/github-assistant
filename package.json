@@ -1,0 +1,29 @@
+{
+  "name": "github-assistant",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "main": "index.js",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+     "dev:web": "npm run dev --workspace=apps/web",
+    "dev:api": "npm run dev --workspace=apps/api",
+    "build:web": "npm run build --workspace=apps/web",
+    "build:api": "npm run build --workspace=apps/api"
+
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/devrajbando/github-assistant.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/devrajbando/github-assistant/issues"
+  },
+  "homepage": "https://github.com/devrajbando/github-assistant#readme"
+}
