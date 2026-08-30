@@ -1,7 +1,184 @@
 generator client {
-  provider = "prisma-client-js"
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
 }
-
 datasource db {
   provider = "postgresql"
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model User {
+  id            String       @id @default(cuid())
+  name          String?
+  email         String?      @unique
+  emailVerified DateTime?    @map("email_verified")
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  repositories  Repository[]
+  chatSessions ChatSession[]
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model Repository {
+  id            String   @id @default(cuid())
+  userId        String   @map("user_id")
+  githubRepoId  BigInt   @unique @map("github_repo_id")
+  name          String
+  fullName      String   @map("full_name")
+  owner         String
+  isPrivate     Boolean  @map("is_private")
+  defaultBranch String   @map("default_branch")
+  pullRequests PullRequest[]
+  issues       Issue[]
+  chatSessions ChatSession[]
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("repositories")
+}
+
+model PullRequest {
+  id           String    @id @default(cuid())
+  repositoryId String    @map("repository_id")
+  githubPrId   BigInt    @unique @map("github_pr_id")
+  number       Int
+  title        String
+  state        String    // "open" | "closed"
+  isMerged     Boolean   @default(false) @map("is_merged")
+  authorLogin  String    @map("author_login")
+  baseBranch   String    @map("base_branch")
+  headBranch   String    @map("head_branch")
+  codeReviews CodeReview[]
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  githubCreatedAt DateTime @map("github_created_at")
+  githubUpdatedAt DateTime @map("github_updated_at")
+
+  repository Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+
+  @@unique([repositoryId, number])
+  @@map("pull_requests")
+}
+
+model Issue {
+  id           String    @id @default(cuid())
+  repositoryId String    @map("repository_id")
+  githubIssueId BigInt   @unique @map("github_issue_id")
+  number       Int
+  title        String
+  state        String    // "open" | "closed"
+  authorLogin  String    @map("author_login")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  githubCreatedAt DateTime @map("github_created_at")
+  githubUpdatedAt DateTime @map("github_updated_at")
+
+  repository Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+
+  @@unique([repositoryId, number])
+  @@map("issues")
+}
+
+model ChatSession {
+  id           String    @id @default(cuid())
+  userId       String    @map("user_id")
+  repositoryId String    @map("repository_id")
+  title        String?
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  repository Repository    @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  messages   ChatMessage[]
+
+  @@map("chat_sessions")
+}
+
+model ChatMessage {
+  id            String   @id @default(cuid())
+  chatSessionId String   @map("chat_session_id")
+  role          String   // "user" | "assistant" | "system"
+  content       String   @db.Text
+  provider      String?  // "gemini" | "groq" | "openrouter" — null for user messages
+  model         String?  // e.g. "gemini-2.0-flash" — null for user messages
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  chatSession ChatSession @relation(fields: [chatSessionId], references: [id], onDelete: Cascade)
+
+  @@map("chat_messages")
+}
+
+model CodeReview {
+  id            String    @id @default(cuid())
+  pullRequestId String    @map("pull_request_id")
+  status        String    // "pending" | "completed" | "failed"
+  summary       String?   @db.Text
+  provider      String?
+  model         String?
+  errorMessage  String?   @map("error_message")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  completedAt   DateTime? @map("completed_at")
+
+  pullRequest PullRequest         @relation(fields: [pullRequestId], references: [id], onDelete: Cascade)
+  findings    CodeReviewFinding[]
+
+  @@map("code_reviews")
+}
+
+model CodeReviewFinding {
+  id           String   @id @default(cuid())
+  codeReviewId String   @map("code_review_id")
+  filePath     String   @map("file_path")
+  lineNumber   Int?     @map("line_number")
+  severity     String   // "info" | "warning" | "critical"
+  comment      String   @db.Text
+
+  codeReview CodeReview @relation(fields: [codeReviewId], references: [id], onDelete: Cascade)
+
+  @@map("code_review_findings")
 }
