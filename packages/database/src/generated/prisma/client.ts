@@ -99,3 +99,23 @@ export type CodeReviewFinding = Prisma.CodeReviewFindingModel
  * 
  */
 export type CodeChunk = Prisma.CodeChunkModel
+/**
+ * Model RepositoryHealthScore
+ * 
+ */
+export type RepositoryHealthScore = Prisma.RepositoryHealthScoreModel
+/**
+ * Model OnboardingGuide
+ * 
+ */
+export type OnboardingGuide = Prisma.OnboardingGuideModel
+/**
+ * Model OnboardingChecklistItem
+ * 
+ */
+export type OnboardingChecklistItem = Prisma.OnboardingChecklistItemModel
+/**
+ * Model ArchitectureDiagram
+ * 
+ */
+export type ArchitectureDiagram = Prisma.ArchitectureDiagramModel

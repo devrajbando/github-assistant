@@ -8,7 +8,6 @@ import SyncButton from "@/components/SyncButton";
 import RepoCard from "@/components/RepoCard";
 import StatChip from "@/components/StatChip";
 import RepoFilterBar, { type IndexFilter, type SortOption, type VisibilityFilter } from "@/components/RepoFilterBar";
-
 const SORT_OPTIONS: SortOption[] = ["updated", "name", "open_prs", "open_issues"];
 const VISIBILITY_OPTIONS: VisibilityFilter[] = ["all", "public", "private"];
 const INDEX_OPTIONS: IndexFilter[] = ["all", "indexed", "not_indexed"];

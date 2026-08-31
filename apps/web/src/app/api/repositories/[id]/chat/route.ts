@@ -1,8 +1,14 @@
 import { prisma } from "database/client";
 import { auth } from "@/auth";
 import { streamChatCompletion, buildRepoContextMessage, ChatMessageInput } from "@/lib/llm";
-import { retrieveCodeContext, formatCodeContextMessage } from "@/lib/retrieve-code-context";
+import { searchRepository, formatCodeContextMessage } from "@/lib/search-repository";
 import { getOrCreateChatSession, getChatMessages, saveChatMessage } from "@/lib/chat-session";
+
+// Kept smaller than the standalone search UI's default (8) — this
+// count was what the RAG feature was originally verified against,
+// and every extra chunk here is prompt budget shared with the full
+// chat history, not just a search results list.
+const CHAT_CODE_CONTEXT_LIMIT = 5;
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
@@ -35,23 +41,29 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
   let codeContextMessage: ChatMessageInput | null = null;
   try {
-    const retrievedChunks = await retrieveCodeContext(repositoryId, message);
-    codeContextMessage = formatCodeContextMessage(retrievedChunks);
+    const results = await searchRepository(repositoryId, message, CHAT_CODE_CONTEXT_LIMIT);
+    codeContextMessage = formatCodeContextMessage(results);
   } catch (err) {
-    // A RAG failure (network blip, exhausted retries, whatever) should
-    // degrade to "answer without code context," not take down the
-    // whole chat turn — the user still gets a real answer grounded in
-    // repo/PR/issue context, just not augmented with retrieved code.
-    console.error("retrieveCodeContext failed, continuing without code context:", err);
+    // A RAG failure (not indexed yet, network blip, exhausted
+    // retries, whatever) should degrade to "answer without code
+    // context," not take down the whole chat turn — the user still
+    // gets a real answer grounded in repo/PR/issue context, just not
+    // augmented with retrieved code.
+    console.error("searchRepository failed, continuing without code context:", err);
   }
 
+  // Code context goes LAST, immediately before the current question
+  // — not near the top of the array. LLMs weight later context more
+  // heavily, and burying it before a long, growing chat history (which
+  // can include the model's own earlier "I don't have code access"
+  // replies) is what caused this exact context to get ignored before.
   const messages: ChatMessageInput[] = [
     contextMessage,
-    ...(codeContextMessage ? [codeContextMessage] : []),
     ...history.map((m) => ({
       role: m.role as ChatMessageInput["role"],
       content: m.content,
     })),
+    ...(codeContextMessage ? [codeContextMessage] : []),
     { role: "user", content: message },
   ];
 

@@ -9,7 +9,21 @@
 * 🟢 You can import this file directly.
 */
 
+export const HealthStatus = {
+  NOT_COMPUTED: 'NOT_COMPUTED',
+  COMPUTING: 'COMPUTING',
+  COMPUTED: 'COMPUTED',
+  FAILED: 'FAILED'
+} as const
+
+export type HealthStatus = (typeof HealthStatus)[keyof typeof HealthStatus]
 
 
-// This file is empty because there are no enums in the schema.
-export {}
+export const OnboardingGuideStatus = {
+  NOT_GENERATED: 'NOT_GENERATED',
+  GENERATING: 'GENERATING',
+  GENERATED: 'GENERATED',
+  FAILED: 'FAILED'
+} as const
+
+export type OnboardingGuideStatus = (typeof OnboardingGuideStatus)[keyof typeof OnboardingGuideStatus]

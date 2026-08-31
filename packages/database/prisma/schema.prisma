@@ -8,7 +8,18 @@ datasource db {
   provider = "postgresql"
   extensions = [vector]
 }
-
+enum HealthStatus {
+  NOT_COMPUTED
+  COMPUTING
+  COMPUTED
+  FAILED
+}
+enum OnboardingGuideStatus {
+  NOT_GENERATED
+  GENERATING
+  GENERATED
+  FAILED
+}
 model Account {
   id                String  @id @default(cuid())
   userId            String  @map("user_id")
@@ -77,9 +88,14 @@ model Repository {
   issues       Issue[]
   chatSessions ChatSession[]
   codeChunks CodeChunk[]
+  architectureDiagrams ArchitectureDiagram[]
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
-
+  healthStatus HealthStatus @default(NOT_COMPUTED) @map("health_status")
+  lastHealthComputedAt  DateTime? @map("last_health_computed_at")
+  lastHealthError       String?   @db.Text @map("last_health_error")
+  healthScore           RepositoryHealthScore?
+  onboardingGuide OnboardingGuide?
   indexStatus      String    @default("NOT_INDEXED") @map("index_status")
   activeIndexRunId String?   @map("active_index_run_id")
   lastIndexedAt    DateTime? @map("last_indexed_at")
@@ -204,4 +220,90 @@ model CodeChunk {
 
   @@index([repositoryId, indexRunId])
   @@map("code_chunks")
+}
+
+model RepositoryHealthScore {
+  id           String @id @default(cuid())
+  repositoryId String @unique @map("repository_id")
+
+  overallScore Int @map("overall_score")
+
+  securityScore Int? @map("security_score")
+  vulnerabilityCriticalCount Int @map("vulnerability_critical_count")
+  vulnerabilityHighCount     Int @map("vulnerability_high_count")
+  vulnerabilityModerateCount Int @map("vulnerability_moderate_count")
+  vulnerabilityLowCount      Int @map("vulnerability_low_count")
+
+  complexityScore         Int   @map("complexity_score")
+  avgCyclomaticComplexity Float @map("avg_cyclomatic_complexity")
+  highComplexityFileCount Int   @map("high_complexity_file_count")
+
+  documentationScore    Int     @map("documentation_score")
+  documentedExportRatio Float   @map("documented_export_ratio")
+  hasReadme             Boolean @map("has_readme")
+
+  activityScore     Int    @map("activity_score")
+  commitsLast90Days Int    @map("commits_last_90_days")
+  prMergeRate       Float? @map("pr_merge_rate")
+
+  computedAt DateTime @default(now()) @map("computed_at")
+
+  repository Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+
+  @@map("repository_health_scores")
+}
+
+
+model OnboardingGuide {
+  id           String               @id @default(cuid())
+  repositoryId String               @unique @map("repository_id")
+
+  status       OnboardingGuideStatus @default(NOT_GENERATED)
+  content      String?              @db.Text
+  provider     String?
+  model        String?
+  lastError    String?               @db.Text @map("last_error")
+  generatedAt  DateTime?             @map("generated_at")
+
+  repository     Repository                 @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  checklistItems OnboardingChecklistItem[]
+
+  @@map("onboarding_guides")
+}
+
+model OnboardingChecklistItem {
+  id                String  @id @default(cuid())
+  onboardingGuideId String  @map("onboarding_guide_id")
+
+  order       Int
+  key         String
+  category    String?
+  title       String
+  description String? @db.Text
+
+  isCompleted Boolean   @default(false) @map("is_completed")
+  completedAt DateTime? @map("completed_at")
+
+ onboardingGuide OnboardingGuide @relation(fields: [onboardingGuideId], references: [id], onDelete: Cascade)
+  @@unique([onboardingGuideId, key])
+  @@index([onboardingGuideId, order])
+  @@map("onboarding_checklist_items")
+}
+
+model ArchitectureDiagram {
+  id              String    @id @default(cuid())
+  repositoryId    String    @map("repository_id")
+  status          String    // "pending" | "completed" | "failed"
+  summary         String?   @db.Text
+  mermaidCode     String?   @db.Text @map("mermaid_code")
+  sourceIndexRunId String?  @map("source_index_run_id")
+  provider        String?
+  model           String?
+  errorMessage    String?   @map("error_message") @db.Text
+  createdAt       DateTime  @default(now()) @map("created_at")
+  completedAt     DateTime? @map("completed_at")
+
+  repository Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+
+  @@map("architecture_diagrams")
 }

@@ -1,15 +1,30 @@
+
 import Link from "next/link";
 import { auth } from "@/auth";
 import { prisma } from "database/client";
 import { redirect, notFound } from "next/navigation";
 import { syncPullRequestsAndIssuesAction } from "@/lib/actions";
-import { getOrCreateChatSession, getChatMessages } from "@/lib/chat-session";
+import {
+  getOrCreateChatSession,
+  getChatMessages,
+} from "@/lib/chat-session";
+
 import type { IndexStatus } from "@/lib/index-repository";
+
 import SyncButton from "@/components/SyncButton";
 import PullRequestCard from "@/components/PullRequestCard";
 import ChatPanel from "@/components/ChatPanel";
 import IndexRepositoryButton from "@/components/IndexRepositoryButton";
 import StatChip from "@/components/StatChip";
+import RepositoryHealth from "@/components/RepositoryHealth";
+import DeveloperOnboarding from "@/components/DeveloperOnboarding";
+import ArchitectureDiagramPanel from "@/components/ArchitectureDiagramPanel";
+
+type HealthStatus =
+  | "NOT_COMPUTED"
+  | "COMPUTING"
+  | "COMPUTED"
+  | "FAILED";
 
 export default async function RepositoryDetailPage({
   params,
@@ -23,153 +38,454 @@ export default async function RepositoryDetailPage({
     redirect("/");
   }
 
-  const repository = await prisma.repository.findFirst({
-    where: { id, userId: session.user.id },
+  const repository = await prisma.repository.findUnique({
+    where: {
+      id,
+    },
     include: {
       pullRequests: {
-        orderBy: { githubUpdatedAt: "desc" },
+        orderBy: {
+          githubUpdatedAt: "desc",
+        },
         include: {
           codeReviews: {
-            orderBy: { createdAt: "desc" },
-            take: 1,
-            include: { findings: true },
+            orderBy: {
+              createdAt: "desc",
+            },
+            include: {
+              findings: true,
+            },
           },
         },
       },
-      issues: { orderBy: { githubUpdatedAt: "desc" } },
+
+      issues: {
+        orderBy: {
+          githubUpdatedAt: "desc",
+        },
+      },
+
+      healthScore: true,
+
+      onboardingGuide: {
+        include: {
+          checklistItems: {
+            orderBy: {
+              order: "asc",
+            },
+          },
+        },
+      },
     },
   });
 
-  if (!repository) {
+  if (!repository || repository.userId !== session.user.id) {
     notFound();
   }
 
-  const chatSession = await getOrCreateChatSession(session.user.id, repository.id);
+  const [chatSession, latestDiagram] = await Promise.all([
+    getOrCreateChatSession(session.user.id, repository.id),
+
+    prisma.architectureDiagram.findFirst({
+      where: {
+        repositoryId: repository.id,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    }),
+  ]);
+
   const chatMessages = await getChatMessages(chatSession.id);
 
-  const openPrCount = repository.pullRequests.filter((pr) => pr.state === "open").length;
-  const openIssueCount = repository.issues.filter((i) => i.state === "open").length;
+  const openPrCount = repository.pullRequests.filter(
+    (pr) => pr.state === "open",
+  ).length;
+
+  const openIssueCount = repository.issues.filter(
+    (issue) => issue.state === "open",
+  ).length;
 
   return (
-    <div className="mx-auto w-full max-w-4xl flex-1 px-6 py-12 sm:px-12 sm:py-16">
+    <main className="mx-auto w-full max-w-5xl px-5 py-8 sm:px-8 sm:py-12">
+      {/* ─────────────────────────────────────────────
+          Back navigation
+      ───────────────────────────────────────────── */}
       <Link
         href="/repositories"
-        className="mb-6 inline-flex items-center gap-1.5 font-mono-ui text-xs text-paper-dim transition-colors hover:text-phosphor"
+        className="mb-7 inline-flex items-center gap-1.5 font-mono-ui text-[11px] uppercase tracking-wide text-paper-dim transition-colors hover:text-phosphor"
       >
         ← back to index
       </Link>
 
-      <div className="mb-8 flex flex-col gap-6 border-b border-panel-border pb-8 sm:flex-row sm:items-end sm:justify-between">
-        <div className="min-w-0">
-          <p className="mb-3 font-mono-ui text-sm text-phosphor">
-            $ cd ./{repository.fullName}
-            <span
-              className="cursor-blink ml-1 inline-block h-3.5 w-1.75 align-[-2px] bg-phosphor"
-              aria-hidden="true"
-            />
-          </p>
-          <h1 className="truncate font-display text-2xl font-bold uppercase leading-tight sm:text-3xl">
-            {repository.fullName}
-          </h1>
-          <p className="mt-2 font-mono-ui text-xs text-paper-dim">
-            {repository.isPrivate ? "PRIVATE" : "PUBLIC"} · DEFAULT BRANCH{" "}
-            {repository.defaultBranch}
-          </p>
-        </div>
+      {/* ─────────────────────────────────────────────
+          Repository identity
+      ───────────────────────────────────────────── */}
+      <header className="border-b border-panel-border pb-7">
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+          <div className="min-w-0">
+            <p className="mb-3 font-mono-ui text-xs text-phosphor">
+              $ cd ./{repository.fullName}
+              <span
+                className="cursor-blink ml-1 inline-block h-3.5 w-1.75 align-[-2px] bg-phosphor"
+                aria-hidden="true"
+              />
+            </p>
 
-        <form action={syncPullRequestsAndIssuesAction}>
-          <input type="hidden" name="repositoryId" value={repository.id} />
-          <SyncButton/>
-        </form>
-      </div>
+            <h1 className="truncate font-display text-2xl font-bold uppercase leading-tight text-paper sm:text-3xl">
+              {repository.fullName}
+            </h1>
 
-      <div className="mb-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <StatChip label="Pull requests" value={repository.pullRequests.length} />
-        <StatChip label="Open PRs" value={openPrCount} />
-        <StatChip label="Issues" value={repository.issues.length} />
-        <StatChip label="Open issues" value={openIssueCount} accent="amber" />
-      </div>
+            <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono-ui text-[10px] uppercase tracking-wide text-paper-dim">
+              <span>
+                {repository.isPrivate ? "PRIVATE" : "PUBLIC"}
+              </span>
 
-      <section className="mb-10">
-        <SectionHeading label={`Pull requests (${repository.pullRequests.length})`} />
-        {repository.pullRequests.length === 0 ? (
-          <EmptyRow text="No pull requests synced yet." />
-        ) : (
-          <div className="space-y-3">
-            {repository.pullRequests.map((pr) => (
-              <PullRequestCard key={pr.id} pullRequest={pr} />
-            ))}
-          </div>
-        )}
-      </section>
+              <span className="text-panel-border">·</span>
 
-      <section className="mb-10">
-        <SectionHeading label={`Issues (${repository.issues.length})`} />
-        {repository.issues.length === 0 ? (
-          <EmptyRow text="No issues synced yet." />
-        ) : (
-          <div className="divide-y divide-panel-border rounded-md border border-panel-border bg-panel">
-            {repository.issues.map((issue) => (
-              <div key={issue.id} className="flex items-center justify-between gap-4 px-4 py-3">
-                <div className="min-w-0">
-                  <span className="font-mono-ui text-xs text-phosphor">#{issue.number}</span>{" "}
-                  <span className="text-sm text-paper">{issue.title}</span>
-                  <p className="mt-0.5 font-mono-ui text-[11px] text-paper-dim">
-                    {issue.authorLogin}
-                  </p>
-                </div>
-                <span
-                  className={`shrink-0 font-mono-ui text-[10.5px] uppercase tracking-wide ${
-                    issue.state === "open" ? "text-phosphor" : "text-paper-dim"
-                  }`}
-                >
-                  {issue.state}
+              <span>
+                DEFAULT BRANCH{" "}
+                <span className="text-paper">
+                  {repository.defaultBranch}
                 </span>
-              </div>
-            ))}
+              </span>
+            </div>
           </div>
-        )}
-      </section>
 
-      <section>
-        <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="font-mono-ui text-[11px] uppercase tracking-widest text-paper-dim">
-            AI copilot
-          </h2>
-          <IndexRepositoryButton
-            repositoryId={repository.id}
-            initialStatus={repository.indexStatus as IndexStatus}
-            initialLastIndexedAt={repository.lastIndexedAt?.toISOString() ?? null}
-            initialError={repository.lastIndexError}
+          <form action={syncPullRequestsAndIssuesAction}>
+            <input
+              type="hidden"
+              name="repositoryId"
+              value={repository.id}
+            />
+
+            <SyncButton />
+          </form>
+        </div>
+      </header>
+
+      {/* ─────────────────────────────────────────────
+          Repository statistics
+      ───────────────────────────────────────────── */}
+      <section className="py-7">
+        <div className="grid grid-cols-2 gap-px border border-panel-border bg-panel-border sm:grid-cols-4">
+          <StatChip
+            label="Pull requests"
+            value={repository.pullRequests.length}
+          />
+
+          <StatChip
+            label="Open PRs"
+            value={openPrCount}
+          />
+
+          <StatChip
+            label="Issues"
+            value={repository.issues.length}
+          />
+
+          <StatChip
+            label="Open issues"
+            value={openIssueCount}
+            accent="amber"
           />
         </div>
+      </section>
+
+      {/* ─────────────────────────────────────────────
+          Repository intelligence
+      ───────────────────────────────────────────── */}
+      <div className="space-y-8">
+        {/* Health */}
+        <section>
+          <SectionHeading label="Repository health" />
+
+          <RepositoryHealth
+            repositoryId={repository.id}
+            initialStatus={
+              repository.healthStatus as HealthStatus
+            }
+            initialComputedAt={
+              repository.lastHealthComputedAt?.toISOString() ??
+              null
+            }
+            initialError={repository.lastHealthError}
+            initialScore={
+              repository.healthScore
+                ? {
+                    overallScore:
+                      repository.healthScore.overallScore,
+
+                    securityScore:
+                      repository.healthScore.securityScore,
+
+                    vulnerabilityCriticalCount:
+                      repository.healthScore
+                        .vulnerabilityCriticalCount,
+
+                    vulnerabilityHighCount:
+                      repository.healthScore
+                        .vulnerabilityHighCount,
+
+                    vulnerabilityModerateCount:
+                      repository.healthScore
+                        .vulnerabilityModerateCount,
+
+                    vulnerabilityLowCount:
+                      repository.healthScore
+                        .vulnerabilityLowCount,
+
+                    complexityScore:
+                      repository.healthScore.complexityScore,
+
+                    avgCyclomaticComplexity:
+                      repository.healthScore
+                        .avgCyclomaticComplexity,
+
+                    highComplexityFileCount:
+                      repository.healthScore
+                        .highComplexityFileCount,
+
+                    documentationScore:
+                      repository.healthScore.documentationScore,
+
+                    documentedExportRatio:
+                      repository.healthScore
+                        .documentedExportRatio,
+
+                    hasReadme:
+                      repository.healthScore.hasReadme,
+
+                    activityScore:
+                      repository.healthScore.activityScore,
+
+                    commitsLast90Days:
+                      repository.healthScore
+                        .commitsLast90Days,
+
+                    prMergeRate:
+                      repository.healthScore.prMergeRate,
+
+                    computedAt:
+                      repository.healthScore.computedAt.toISOString(),
+                  }
+                : null
+            }
+          />
+        </section>
+
+        {/* Onboarding */}
+        <section>
+          <SectionHeading label="Developer onboarding" />
+
+          <DeveloperOnboarding
+            repositoryId={repository.id}
+            initialGuide={repository.onboardingGuide}
+          />
+        </section>
+
+        {/* Architecture */}
+        <section>
+          <SectionHeading label="System architecture" />
+
+          <ArchitectureDiagramPanel
+            repositoryId={repository.id}
+            indexStatus={
+              repository.indexStatus as IndexStatus
+            }
+            currentIndexRunId={
+              repository.activeIndexRunId
+            }
+            initialDiagram={
+              latestDiagram
+                ? {
+                    id: latestDiagram.id,
+                    status:
+                      latestDiagram.status as
+                        | "pending"
+                        | "completed"
+                        | "failed",
+                    summary: latestDiagram.summary,
+                    mermaidCode:
+                      latestDiagram.mermaidCode,
+                    sourceIndexRunId:
+                      latestDiagram.sourceIndexRunId,
+                    errorMessage:
+                      latestDiagram.errorMessage,
+                  }
+                : null
+            }
+          />
+        </section>
+      </div>
+
+      {/* ─────────────────────────────────────────────
+          Repository activity
+      ───────────────────────────────────────────── */}
+      <section className="mt-12 border-t border-panel-border pt-8">
+        <SectionHeading label="Repository activity" />
+
+        <div className="space-y-8">
+          {/* Pull Requests */}
+          <div>
+            <SubsectionHeading
+              label={`Pull requests (${repository.pullRequests.length})`}
+            />
+
+            {repository.pullRequests.length === 0 ? (
+              <EmptyRow text="No pull requests synced yet." />
+            ) : (
+              <div className="space-y-3">
+                {repository.pullRequests.map((pr) => (
+                  <PullRequestCard
+                    key={pr.id}
+                    pullRequest={pr}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Issues */}
+          <div>
+            <SubsectionHeading
+              label={`Issues (${repository.issues.length})`}
+            />
+
+            {repository.issues.length === 0 ? (
+              <EmptyRow text="No issues synced yet." />
+            ) : (
+              <div className="divide-y divide-panel-border rounded-md border border-panel-border bg-panel">
+                {repository.issues.map((issue) => (
+                  <div
+                    key={issue.id}
+                    className="flex items-center justify-between gap-4 px-4 py-3"
+                  >
+                    <div className="min-w-0">
+                      <div>
+                        <span className="font-mono-ui text-xs text-phosphor">
+                          #{issue.number}
+                        </span>{" "}
+                        <span className="text-sm text-paper">
+                          {issue.title}
+                        </span>
+                      </div>
+
+                      <p className="mt-0.5 font-mono-ui text-[10px] text-paper-dim">
+                        {issue.authorLogin}
+                      </p>
+                    </div>
+
+                    <span
+                      className={`shrink-0 font-mono-ui text-[10px] uppercase tracking-wide ${
+                        issue.state === "open"
+                          ? "text-phosphor"
+                          : "text-paper-dim"
+                      }`}
+                    >
+                      {issue.state}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* ─────────────────────────────────────────────
+          AI Copilot
+      ───────────────────────────────────────────── */}
+      <section className="mt-12 border-t border-panel-border pt-8">
+        <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <h2 className="font-mono-ui text-sm font-semibold uppercase tracking-[0.08em] text-paper">
+                AI Copilot
+              </h2>
+
+              <span className="border border-panel-border px-1.5 py-0.5 font-mono-ui text-[9px] uppercase tracking-wider text-paper-dim">
+                ASSISTANT
+              </span>
+            </div>
+
+            <p className="max-w-xl text-xs leading-relaxed text-paper-dim">
+              Ask questions and get help understanding this
+              repository.
+            </p>
+          </div>
+
+          <div className="flex flex-col items-end gap-1.5">
+            <IndexRepositoryButton
+              repositoryId={repository.id}
+              initialStatus={
+                repository.indexStatus as IndexStatus
+              }
+              initialLastIndexedAt={
+                repository.lastIndexedAt?.toISOString() ??
+                null
+              }
+              initialError={repository.lastIndexError}
+            />
+
+            <p className="max-w-xs text-right font-mono-ui text-[9px] leading-relaxed text-paper-dim">
+              INDEXING ENABLES COPILOT TO UNDERSTAND YOUR CODEBASE.
+            </p>
+          </div>
+        </div>
+
         <ChatPanel
           repositoryId={repository.id}
-          initialMessages={chatMessages.map((m) => ({
-            id: m.id,
-            role: m.role,
-            content: m.content,
-            provider: m.provider,
-            model: m.model,
+          initialMessages={chatMessages.map((message) => ({
+            id: message.id,
+            role: message.role,
+            content: message.content,
+            provider: message.provider,
+            model: message.model,
           }))}
         />
       </section>
+    </main>
+  );
+}
+
+function SectionHeading({
+  label,
+}: {
+  label: string;
+}) {
+  return (
+    <div className="mb-3 flex items-center gap-3">
+      <h2 className="font-mono-ui text-[10px] uppercase tracking-[0.16em] text-paper-dim">
+        {label}
+      </h2>
+
+      <div className="h-px flex-1 bg-panel-border" />
     </div>
   );
 }
 
-function SectionHeading({ label }: { label: string }) {
+function SubsectionHeading({
+  label,
+}: {
+  label: string;
+}) {
   return (
-    <h2 className="mb-3 font-mono-ui text-[11px] uppercase tracking-widest text-paper-dim">
+    <h3 className="mb-3 font-mono-ui text-[10px] uppercase tracking-widest text-paper-dim">
       {label}
-    </h2>
+    </h3>
   );
 }
 
-function EmptyRow({ text }: { text: string }) {
+function EmptyRow({
+  text,
+}: {
+  text: string;
+}) {
   return (
     <div className="rounded-md border border-panel-border bg-panel px-4 py-6 text-center font-mono-ui text-xs text-paper-dim">
       {text}
     </div>
   );
 }
+

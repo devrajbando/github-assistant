@@ -408,7 +408,11 @@ export const ModelName = {
   ChatMessage: 'ChatMessage',
   CodeReview: 'CodeReview',
   CodeReviewFinding: 'CodeReviewFinding',
-  CodeChunk: 'CodeChunk'
+  CodeChunk: 'CodeChunk',
+  RepositoryHealthScore: 'RepositoryHealthScore',
+  OnboardingGuide: 'OnboardingGuide',
+  OnboardingChecklistItem: 'OnboardingChecklistItem',
+  ArchitectureDiagram: 'ArchitectureDiagram'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -424,7 +428,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "account" | "session" | "user" | "verificationToken" | "repository" | "pullRequest" | "issue" | "chatSession" | "chatMessage" | "codeReview" | "codeReviewFinding" | "codeChunk"
+    modelProps: "account" | "session" | "user" | "verificationToken" | "repository" | "pullRequest" | "issue" | "chatSession" | "chatMessage" | "codeReview" | "codeReviewFinding" | "codeChunk" | "repositoryHealthScore" | "onboardingGuide" | "onboardingChecklistItem" | "architectureDiagram"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1300,6 +1304,302 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    RepositoryHealthScore: {
+      payload: Prisma.$RepositoryHealthScorePayload<ExtArgs>
+      fields: Prisma.RepositoryHealthScoreFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RepositoryHealthScoreFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepositoryHealthScorePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RepositoryHealthScoreFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepositoryHealthScorePayload>
+        }
+        findFirst: {
+          args: Prisma.RepositoryHealthScoreFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepositoryHealthScorePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RepositoryHealthScoreFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepositoryHealthScorePayload>
+        }
+        findMany: {
+          args: Prisma.RepositoryHealthScoreFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepositoryHealthScorePayload>[]
+        }
+        create: {
+          args: Prisma.RepositoryHealthScoreCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepositoryHealthScorePayload>
+        }
+        createMany: {
+          args: Prisma.RepositoryHealthScoreCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RepositoryHealthScoreCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepositoryHealthScorePayload>[]
+        }
+        delete: {
+          args: Prisma.RepositoryHealthScoreDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepositoryHealthScorePayload>
+        }
+        update: {
+          args: Prisma.RepositoryHealthScoreUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepositoryHealthScorePayload>
+        }
+        deleteMany: {
+          args: Prisma.RepositoryHealthScoreDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RepositoryHealthScoreUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RepositoryHealthScoreUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepositoryHealthScorePayload>[]
+        }
+        upsert: {
+          args: Prisma.RepositoryHealthScoreUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepositoryHealthScorePayload>
+        }
+        aggregate: {
+          args: Prisma.RepositoryHealthScoreAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRepositoryHealthScore>
+        }
+        groupBy: {
+          args: Prisma.RepositoryHealthScoreGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RepositoryHealthScoreGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RepositoryHealthScoreCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RepositoryHealthScoreCountAggregateOutputType> | number
+        }
+      }
+    }
+    OnboardingGuide: {
+      payload: Prisma.$OnboardingGuidePayload<ExtArgs>
+      fields: Prisma.OnboardingGuideFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.OnboardingGuideFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OnboardingGuidePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.OnboardingGuideFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OnboardingGuidePayload>
+        }
+        findFirst: {
+          args: Prisma.OnboardingGuideFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OnboardingGuidePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.OnboardingGuideFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OnboardingGuidePayload>
+        }
+        findMany: {
+          args: Prisma.OnboardingGuideFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OnboardingGuidePayload>[]
+        }
+        create: {
+          args: Prisma.OnboardingGuideCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OnboardingGuidePayload>
+        }
+        createMany: {
+          args: Prisma.OnboardingGuideCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.OnboardingGuideCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OnboardingGuidePayload>[]
+        }
+        delete: {
+          args: Prisma.OnboardingGuideDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OnboardingGuidePayload>
+        }
+        update: {
+          args: Prisma.OnboardingGuideUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OnboardingGuidePayload>
+        }
+        deleteMany: {
+          args: Prisma.OnboardingGuideDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.OnboardingGuideUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.OnboardingGuideUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OnboardingGuidePayload>[]
+        }
+        upsert: {
+          args: Prisma.OnboardingGuideUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OnboardingGuidePayload>
+        }
+        aggregate: {
+          args: Prisma.OnboardingGuideAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateOnboardingGuide>
+        }
+        groupBy: {
+          args: Prisma.OnboardingGuideGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OnboardingGuideGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.OnboardingGuideCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OnboardingGuideCountAggregateOutputType> | number
+        }
+      }
+    }
+    OnboardingChecklistItem: {
+      payload: Prisma.$OnboardingChecklistItemPayload<ExtArgs>
+      fields: Prisma.OnboardingChecklistItemFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.OnboardingChecklistItemFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OnboardingChecklistItemPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.OnboardingChecklistItemFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OnboardingChecklistItemPayload>
+        }
+        findFirst: {
+          args: Prisma.OnboardingChecklistItemFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OnboardingChecklistItemPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.OnboardingChecklistItemFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OnboardingChecklistItemPayload>
+        }
+        findMany: {
+          args: Prisma.OnboardingChecklistItemFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OnboardingChecklistItemPayload>[]
+        }
+        create: {
+          args: Prisma.OnboardingChecklistItemCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OnboardingChecklistItemPayload>
+        }
+        createMany: {
+          args: Prisma.OnboardingChecklistItemCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.OnboardingChecklistItemCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OnboardingChecklistItemPayload>[]
+        }
+        delete: {
+          args: Prisma.OnboardingChecklistItemDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OnboardingChecklistItemPayload>
+        }
+        update: {
+          args: Prisma.OnboardingChecklistItemUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OnboardingChecklistItemPayload>
+        }
+        deleteMany: {
+          args: Prisma.OnboardingChecklistItemDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.OnboardingChecklistItemUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.OnboardingChecklistItemUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OnboardingChecklistItemPayload>[]
+        }
+        upsert: {
+          args: Prisma.OnboardingChecklistItemUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OnboardingChecklistItemPayload>
+        }
+        aggregate: {
+          args: Prisma.OnboardingChecklistItemAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateOnboardingChecklistItem>
+        }
+        groupBy: {
+          args: Prisma.OnboardingChecklistItemGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OnboardingChecklistItemGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.OnboardingChecklistItemCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OnboardingChecklistItemCountAggregateOutputType> | number
+        }
+      }
+    }
+    ArchitectureDiagram: {
+      payload: Prisma.$ArchitectureDiagramPayload<ExtArgs>
+      fields: Prisma.ArchitectureDiagramFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ArchitectureDiagramFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArchitectureDiagramPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ArchitectureDiagramFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArchitectureDiagramPayload>
+        }
+        findFirst: {
+          args: Prisma.ArchitectureDiagramFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArchitectureDiagramPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ArchitectureDiagramFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArchitectureDiagramPayload>
+        }
+        findMany: {
+          args: Prisma.ArchitectureDiagramFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArchitectureDiagramPayload>[]
+        }
+        create: {
+          args: Prisma.ArchitectureDiagramCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArchitectureDiagramPayload>
+        }
+        createMany: {
+          args: Prisma.ArchitectureDiagramCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ArchitectureDiagramCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArchitectureDiagramPayload>[]
+        }
+        delete: {
+          args: Prisma.ArchitectureDiagramDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArchitectureDiagramPayload>
+        }
+        update: {
+          args: Prisma.ArchitectureDiagramUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArchitectureDiagramPayload>
+        }
+        deleteMany: {
+          args: Prisma.ArchitectureDiagramDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ArchitectureDiagramUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ArchitectureDiagramUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArchitectureDiagramPayload>[]
+        }
+        upsert: {
+          args: Prisma.ArchitectureDiagramUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArchitectureDiagramPayload>
+        }
+        aggregate: {
+          args: Prisma.ArchitectureDiagramAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateArchitectureDiagram>
+        }
+        groupBy: {
+          args: Prisma.ArchitectureDiagramGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ArchitectureDiagramGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ArchitectureDiagramCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ArchitectureDiagramCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1400,6 +1700,9 @@ export const RepositoryScalarFieldEnum = {
   defaultBranch: 'defaultBranch',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
+  healthStatus: 'healthStatus',
+  lastHealthComputedAt: 'lastHealthComputedAt',
+  lastHealthError: 'lastHealthError',
   indexStatus: 'indexStatus',
   activeIndexRunId: 'activeIndexRunId',
   lastIndexedAt: 'lastIndexedAt',
@@ -1510,6 +1813,76 @@ export const CodeChunkScalarFieldEnum = {
 export type CodeChunkScalarFieldEnum = (typeof CodeChunkScalarFieldEnum)[keyof typeof CodeChunkScalarFieldEnum]
 
 
+export const RepositoryHealthScoreScalarFieldEnum = {
+  id: 'id',
+  repositoryId: 'repositoryId',
+  overallScore: 'overallScore',
+  securityScore: 'securityScore',
+  vulnerabilityCriticalCount: 'vulnerabilityCriticalCount',
+  vulnerabilityHighCount: 'vulnerabilityHighCount',
+  vulnerabilityModerateCount: 'vulnerabilityModerateCount',
+  vulnerabilityLowCount: 'vulnerabilityLowCount',
+  complexityScore: 'complexityScore',
+  avgCyclomaticComplexity: 'avgCyclomaticComplexity',
+  highComplexityFileCount: 'highComplexityFileCount',
+  documentationScore: 'documentationScore',
+  documentedExportRatio: 'documentedExportRatio',
+  hasReadme: 'hasReadme',
+  activityScore: 'activityScore',
+  commitsLast90Days: 'commitsLast90Days',
+  prMergeRate: 'prMergeRate',
+  computedAt: 'computedAt'
+} as const
+
+export type RepositoryHealthScoreScalarFieldEnum = (typeof RepositoryHealthScoreScalarFieldEnum)[keyof typeof RepositoryHealthScoreScalarFieldEnum]
+
+
+export const OnboardingGuideScalarFieldEnum = {
+  id: 'id',
+  repositoryId: 'repositoryId',
+  status: 'status',
+  content: 'content',
+  provider: 'provider',
+  model: 'model',
+  lastError: 'lastError',
+  generatedAt: 'generatedAt'
+} as const
+
+export type OnboardingGuideScalarFieldEnum = (typeof OnboardingGuideScalarFieldEnum)[keyof typeof OnboardingGuideScalarFieldEnum]
+
+
+export const OnboardingChecklistItemScalarFieldEnum = {
+  id: 'id',
+  onboardingGuideId: 'onboardingGuideId',
+  order: 'order',
+  key: 'key',
+  category: 'category',
+  title: 'title',
+  description: 'description',
+  isCompleted: 'isCompleted',
+  completedAt: 'completedAt'
+} as const
+
+export type OnboardingChecklistItemScalarFieldEnum = (typeof OnboardingChecklistItemScalarFieldEnum)[keyof typeof OnboardingChecklistItemScalarFieldEnum]
+
+
+export const ArchitectureDiagramScalarFieldEnum = {
+  id: 'id',
+  repositoryId: 'repositoryId',
+  status: 'status',
+  summary: 'summary',
+  mermaidCode: 'mermaidCode',
+  sourceIndexRunId: 'sourceIndexRunId',
+  provider: 'provider',
+  model: 'model',
+  errorMessage: 'errorMessage',
+  createdAt: 'createdAt',
+  completedAt: 'completedAt'
+} as const
+
+export type ArchitectureDiagramScalarFieldEnum = (typeof ArchitectureDiagramScalarFieldEnum)[keyof typeof ArchitectureDiagramScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -1604,6 +1977,20 @@ export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
 
 
 /**
+ * Reference to a field of type 'HealthStatus'
+ */
+export type EnumHealthStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HealthStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'HealthStatus[]'
+ */
+export type ListEnumHealthStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HealthStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -1614,6 +2001,20 @@ export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, '
  * Reference to a field of type 'Float[]'
  */
 export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+/**
+ * Reference to a field of type 'OnboardingGuideStatus'
+ */
+export type EnumOnboardingGuideStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OnboardingGuideStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'OnboardingGuideStatus[]'
+ */
+export type ListEnumOnboardingGuideStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OnboardingGuideStatus[]'>
     
 
 /**
@@ -1779,6 +2180,10 @@ export type GlobalOmitConfig = {
   codeReview?: Prisma.CodeReviewOmit
   codeReviewFinding?: Prisma.CodeReviewFindingOmit
   codeChunk?: Prisma.CodeChunkOmit
+  repositoryHealthScore?: Prisma.RepositoryHealthScoreOmit
+  onboardingGuide?: Prisma.OnboardingGuideOmit
+  onboardingChecklistItem?: Prisma.OnboardingChecklistItemOmit
+  architectureDiagram?: Prisma.ArchitectureDiagramOmit
 }
 
 /* Types for Logging */

@@ -62,7 +62,11 @@ export const ModelName = {
   ChatMessage: 'ChatMessage',
   CodeReview: 'CodeReview',
   CodeReviewFinding: 'CodeReviewFinding',
-  CodeChunk: 'CodeChunk'
+  CodeChunk: 'CodeChunk',
+  RepositoryHealthScore: 'RepositoryHealthScore',
+  OnboardingGuide: 'OnboardingGuide',
+  OnboardingChecklistItem: 'OnboardingChecklistItem',
+  ArchitectureDiagram: 'ArchitectureDiagram'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -142,6 +146,9 @@ export const RepositoryScalarFieldEnum = {
   defaultBranch: 'defaultBranch',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
+  healthStatus: 'healthStatus',
+  lastHealthComputedAt: 'lastHealthComputedAt',
+  lastHealthError: 'lastHealthError',
   indexStatus: 'indexStatus',
   activeIndexRunId: 'activeIndexRunId',
   lastIndexedAt: 'lastIndexedAt',
@@ -250,6 +257,76 @@ export const CodeChunkScalarFieldEnum = {
 } as const
 
 export type CodeChunkScalarFieldEnum = (typeof CodeChunkScalarFieldEnum)[keyof typeof CodeChunkScalarFieldEnum]
+
+
+export const RepositoryHealthScoreScalarFieldEnum = {
+  id: 'id',
+  repositoryId: 'repositoryId',
+  overallScore: 'overallScore',
+  securityScore: 'securityScore',
+  vulnerabilityCriticalCount: 'vulnerabilityCriticalCount',
+  vulnerabilityHighCount: 'vulnerabilityHighCount',
+  vulnerabilityModerateCount: 'vulnerabilityModerateCount',
+  vulnerabilityLowCount: 'vulnerabilityLowCount',
+  complexityScore: 'complexityScore',
+  avgCyclomaticComplexity: 'avgCyclomaticComplexity',
+  highComplexityFileCount: 'highComplexityFileCount',
+  documentationScore: 'documentationScore',
+  documentedExportRatio: 'documentedExportRatio',
+  hasReadme: 'hasReadme',
+  activityScore: 'activityScore',
+  commitsLast90Days: 'commitsLast90Days',
+  prMergeRate: 'prMergeRate',
+  computedAt: 'computedAt'
+} as const
+
+export type RepositoryHealthScoreScalarFieldEnum = (typeof RepositoryHealthScoreScalarFieldEnum)[keyof typeof RepositoryHealthScoreScalarFieldEnum]
+
+
+export const OnboardingGuideScalarFieldEnum = {
+  id: 'id',
+  repositoryId: 'repositoryId',
+  status: 'status',
+  content: 'content',
+  provider: 'provider',
+  model: 'model',
+  lastError: 'lastError',
+  generatedAt: 'generatedAt'
+} as const
+
+export type OnboardingGuideScalarFieldEnum = (typeof OnboardingGuideScalarFieldEnum)[keyof typeof OnboardingGuideScalarFieldEnum]
+
+
+export const OnboardingChecklistItemScalarFieldEnum = {
+  id: 'id',
+  onboardingGuideId: 'onboardingGuideId',
+  order: 'order',
+  key: 'key',
+  category: 'category',
+  title: 'title',
+  description: 'description',
+  isCompleted: 'isCompleted',
+  completedAt: 'completedAt'
+} as const
+
+export type OnboardingChecklistItemScalarFieldEnum = (typeof OnboardingChecklistItemScalarFieldEnum)[keyof typeof OnboardingChecklistItemScalarFieldEnum]
+
+
+export const ArchitectureDiagramScalarFieldEnum = {
+  id: 'id',
+  repositoryId: 'repositoryId',
+  status: 'status',
+  summary: 'summary',
+  mermaidCode: 'mermaidCode',
+  sourceIndexRunId: 'sourceIndexRunId',
+  provider: 'provider',
+  model: 'model',
+  errorMessage: 'errorMessage',
+  createdAt: 'createdAt',
+  completedAt: 'completedAt'
+} as const
+
+export type ArchitectureDiagramScalarFieldEnum = (typeof ArchitectureDiagramScalarFieldEnum)[keyof typeof ArchitectureDiagramScalarFieldEnum]
 
 
 export const SortOrder = {

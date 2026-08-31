@@ -128,10 +128,10 @@ export default function PullRequestCard({ pullRequest }: PullRequestCardProps) {
               {review.summary && (
                 <p className="mb-4 text-sm leading-relaxed text-paper-dim">{review.summary}</p>
               )}
-              {review.findings.length === 0 ? (
-                <p className="font-mono-ui text-xs text-paper-dim">No findings — clean diff.</p>
-              ) : (
-                <ul className="space-y-2.5">
+              {(review.findings ?? []).length === 0 ? (
+              <p className="font-mono-ui text-xs text-paper-dim">No findings — clean diff.</p>
+            ) : (
+              <ul className="space-y-2.5">
                   {review.findings.map((f) => (
                     <li
                       key={f.id}
