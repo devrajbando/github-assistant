@@ -61,7 +61,8 @@ export const ModelName = {
   ChatSession: 'ChatSession',
   ChatMessage: 'ChatMessage',
   CodeReview: 'CodeReview',
-  CodeReviewFinding: 'CodeReviewFinding'
+  CodeReviewFinding: 'CodeReviewFinding',
+  CodeChunk: 'CodeChunk'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -140,7 +141,11 @@ export const RepositoryScalarFieldEnum = {
   isPrivate: 'isPrivate',
   defaultBranch: 'defaultBranch',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  indexStatus: 'indexStatus',
+  activeIndexRunId: 'activeIndexRunId',
+  lastIndexedAt: 'lastIndexedAt',
+  lastIndexError: 'lastIndexError'
 } as const
 
 export type RepositoryScalarFieldEnum = (typeof RepositoryScalarFieldEnum)[keyof typeof RepositoryScalarFieldEnum]
@@ -233,6 +238,18 @@ export const CodeReviewFindingScalarFieldEnum = {
 } as const
 
 export type CodeReviewFindingScalarFieldEnum = (typeof CodeReviewFindingScalarFieldEnum)[keyof typeof CodeReviewFindingScalarFieldEnum]
+
+
+export const CodeChunkScalarFieldEnum = {
+  id: 'id',
+  repositoryId: 'repositoryId',
+  indexRunId: 'indexRunId',
+  filePath: 'filePath',
+  content: 'content',
+  createdAt: 'createdAt'
+} as const
+
+export type CodeChunkScalarFieldEnum = (typeof CodeChunkScalarFieldEnum)[keyof typeof CodeChunkScalarFieldEnum]
 
 
 export const SortOrder = {

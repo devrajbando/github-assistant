@@ -1,17 +1,31 @@
 "use client";
 
 import { useFormStatus } from "react-dom";
+import { rockerBtnClass } from "@/lib/ui-classes";
 
-export function SyncButton() {
+type SyncButtonProps = {
+  label?: string;
+  pendingLabel?: string;
+};
+
+export default function SyncButton({
+  label = "Sync from GitHub",
+  pendingLabel = "Syncing…",
+}: SyncButtonProps) {
   const { pending } = useFormStatus();
 
   return (
     <button
       type="submit"
       disabled={pending}
-      className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
+      aria-busy={pending}
+      className={`${rockerBtnClass} ${pending ? "cursor-wait opacity-70 hover:shadow-none" : ""}`}
     >
-      {pending ? "Syncing..." : "Sync from GitHub"}
+      <span
+        className={`h-2 w-2 rounded-full bg-console ${pending ? "pulse-dot" : ""}`}
+        aria-hidden="true"
+      />
+      {pending ? pendingLabel : label}
     </button>
   );
 }

@@ -25,5 +25,9 @@
   "bugs": {
     "url": "https://github.com/devrajbando/github-assistant/issues"
   },
-  "homepage": "https://github.com/devrajbando/github-assistant#readme"
+  "homepage": "https://github.com/devrajbando/github-assistant#readme",
+  "overrides": {
+    "deepmerge-ts": "^8.0.0"
+  }
+
 }

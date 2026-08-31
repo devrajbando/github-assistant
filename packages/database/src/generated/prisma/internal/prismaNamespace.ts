@@ -407,7 +407,8 @@ export const ModelName = {
   ChatSession: 'ChatSession',
   ChatMessage: 'ChatMessage',
   CodeReview: 'CodeReview',
-  CodeReviewFinding: 'CodeReviewFinding'
+  CodeReviewFinding: 'CodeReviewFinding',
+  CodeChunk: 'CodeChunk'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -423,7 +424,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "account" | "session" | "user" | "verificationToken" | "repository" | "pullRequest" | "issue" | "chatSession" | "chatMessage" | "codeReview" | "codeReviewFinding"
+    modelProps: "account" | "session" | "user" | "verificationToken" | "repository" | "pullRequest" | "issue" | "chatSession" | "chatMessage" | "codeReview" | "codeReviewFinding" | "codeChunk"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1241,6 +1242,64 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    CodeChunk: {
+      payload: Prisma.$CodeChunkPayload<ExtArgs>
+      fields: Prisma.CodeChunkFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CodeChunkFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CodeChunkPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CodeChunkFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CodeChunkPayload>
+        }
+        findFirst: {
+          args: Prisma.CodeChunkFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CodeChunkPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CodeChunkFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CodeChunkPayload>
+        }
+        findMany: {
+          args: Prisma.CodeChunkFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CodeChunkPayload>[]
+        }
+        delete: {
+          args: Prisma.CodeChunkDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CodeChunkPayload>
+        }
+        update: {
+          args: Prisma.CodeChunkUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CodeChunkPayload>
+        }
+        deleteMany: {
+          args: Prisma.CodeChunkDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CodeChunkUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CodeChunkUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CodeChunkPayload>[]
+        }
+        aggregate: {
+          args: Prisma.CodeChunkAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCodeChunk>
+        }
+        groupBy: {
+          args: Prisma.CodeChunkGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CodeChunkGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CodeChunkCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CodeChunkCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1340,7 +1399,11 @@ export const RepositoryScalarFieldEnum = {
   isPrivate: 'isPrivate',
   defaultBranch: 'defaultBranch',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  indexStatus: 'indexStatus',
+  activeIndexRunId: 'activeIndexRunId',
+  lastIndexedAt: 'lastIndexedAt',
+  lastIndexError: 'lastIndexError'
 } as const
 
 export type RepositoryScalarFieldEnum = (typeof RepositoryScalarFieldEnum)[keyof typeof RepositoryScalarFieldEnum]
@@ -1433,6 +1496,18 @@ export const CodeReviewFindingScalarFieldEnum = {
 } as const
 
 export type CodeReviewFindingScalarFieldEnum = (typeof CodeReviewFindingScalarFieldEnum)[keyof typeof CodeReviewFindingScalarFieldEnum]
+
+
+export const CodeChunkScalarFieldEnum = {
+  id: 'id',
+  repositoryId: 'repositoryId',
+  indexRunId: 'indexRunId',
+  filePath: 'filePath',
+  content: 'content',
+  createdAt: 'createdAt'
+} as const
+
+export type CodeChunkScalarFieldEnum = (typeof CodeChunkScalarFieldEnum)[keyof typeof CodeChunkScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1703,6 +1778,7 @@ export type GlobalOmitConfig = {
   chatMessage?: Prisma.ChatMessageOmit
   codeReview?: Prisma.CodeReviewOmit
   codeReviewFinding?: Prisma.CodeReviewFindingOmit
+  codeChunk?: Prisma.CodeChunkOmit
 }
 
 /* Types for Logging */

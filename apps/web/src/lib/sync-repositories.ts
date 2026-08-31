@@ -9,7 +9,6 @@ export async function syncRepositoriesForUser(userId: string) {
   if (!account?.access_token) {
     throw new Error(`No GitHub account/token found for user ${userId}`);
   }
-
   const octokit = createGitHubClient(account.access_token);
 
   // .paginate automatically follows GitHub's pagination until exhausted

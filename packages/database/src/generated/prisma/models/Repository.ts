@@ -45,6 +45,10 @@ export type RepositoryMinAggregateOutputType = {
   defaultBranch: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  indexStatus: string | null
+  activeIndexRunId: string | null
+  lastIndexedAt: Date | null
+  lastIndexError: string | null
 }
 
 export type RepositoryMaxAggregateOutputType = {
@@ -58,6 +62,10 @@ export type RepositoryMaxAggregateOutputType = {
   defaultBranch: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  indexStatus: string | null
+  activeIndexRunId: string | null
+  lastIndexedAt: Date | null
+  lastIndexError: string | null
 }
 
 export type RepositoryCountAggregateOutputType = {
@@ -71,6 +79,10 @@ export type RepositoryCountAggregateOutputType = {
   defaultBranch: number
   createdAt: number
   updatedAt: number
+  indexStatus: number
+  activeIndexRunId: number
+  lastIndexedAt: number
+  lastIndexError: number
   _all: number
 }
 
@@ -94,6 +106,10 @@ export type RepositoryMinAggregateInputType = {
   defaultBranch?: true
   createdAt?: true
   updatedAt?: true
+  indexStatus?: true
+  activeIndexRunId?: true
+  lastIndexedAt?: true
+  lastIndexError?: true
 }
 
 export type RepositoryMaxAggregateInputType = {
@@ -107,6 +123,10 @@ export type RepositoryMaxAggregateInputType = {
   defaultBranch?: true
   createdAt?: true
   updatedAt?: true
+  indexStatus?: true
+  activeIndexRunId?: true
+  lastIndexedAt?: true
+  lastIndexError?: true
 }
 
 export type RepositoryCountAggregateInputType = {
@@ -120,6 +140,10 @@ export type RepositoryCountAggregateInputType = {
   defaultBranch?: true
   createdAt?: true
   updatedAt?: true
+  indexStatus?: true
+  activeIndexRunId?: true
+  lastIndexedAt?: true
+  lastIndexError?: true
   _all?: true
 }
 
@@ -220,6 +244,10 @@ export type RepositoryGroupByOutputType = {
   defaultBranch: string
   createdAt: Date
   updatedAt: Date
+  indexStatus: string
+  activeIndexRunId: string | null
+  lastIndexedAt: Date | null
+  lastIndexError: string | null
   _count: RepositoryCountAggregateOutputType | null
   _avg: RepositoryAvgAggregateOutputType | null
   _sum: RepositorySumAggregateOutputType | null
@@ -256,9 +284,14 @@ export type RepositoryWhereInput = {
   defaultBranch?: Prisma.StringFilter<"Repository"> | string
   createdAt?: Prisma.DateTimeFilter<"Repository"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Repository"> | Date | string
+  indexStatus?: Prisma.StringFilter<"Repository"> | string
+  activeIndexRunId?: Prisma.StringNullableFilter<"Repository"> | string | null
+  lastIndexedAt?: Prisma.DateTimeNullableFilter<"Repository"> | Date | string | null
+  lastIndexError?: Prisma.StringNullableFilter<"Repository"> | string | null
   pullRequests?: Prisma.PullRequestListRelationFilter
   issues?: Prisma.IssueListRelationFilter
   chatSessions?: Prisma.ChatSessionListRelationFilter
+  codeChunks?: Prisma.CodeChunkListRelationFilter
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
@@ -273,9 +306,14 @@ export type RepositoryOrderByWithRelationInput = {
   defaultBranch?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  indexStatus?: Prisma.SortOrder
+  activeIndexRunId?: Prisma.SortOrderInput | Prisma.SortOrder
+  lastIndexedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  lastIndexError?: Prisma.SortOrderInput | Prisma.SortOrder
   pullRequests?: Prisma.PullRequestOrderByRelationAggregateInput
   issues?: Prisma.IssueOrderByRelationAggregateInput
   chatSessions?: Prisma.ChatSessionOrderByRelationAggregateInput
+  codeChunks?: Prisma.CodeChunkOrderByRelationAggregateInput
   user?: Prisma.UserOrderByWithRelationInput
 }
 
@@ -293,9 +331,14 @@ export type RepositoryWhereUniqueInput = Prisma.AtLeast<{
   defaultBranch?: Prisma.StringFilter<"Repository"> | string
   createdAt?: Prisma.DateTimeFilter<"Repository"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Repository"> | Date | string
+  indexStatus?: Prisma.StringFilter<"Repository"> | string
+  activeIndexRunId?: Prisma.StringNullableFilter<"Repository"> | string | null
+  lastIndexedAt?: Prisma.DateTimeNullableFilter<"Repository"> | Date | string | null
+  lastIndexError?: Prisma.StringNullableFilter<"Repository"> | string | null
   pullRequests?: Prisma.PullRequestListRelationFilter
   issues?: Prisma.IssueListRelationFilter
   chatSessions?: Prisma.ChatSessionListRelationFilter
+  codeChunks?: Prisma.CodeChunkListRelationFilter
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id" | "githubRepoId">
 
@@ -310,6 +353,10 @@ export type RepositoryOrderByWithAggregationInput = {
   defaultBranch?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  indexStatus?: Prisma.SortOrder
+  activeIndexRunId?: Prisma.SortOrderInput | Prisma.SortOrder
+  lastIndexedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  lastIndexError?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.RepositoryCountOrderByAggregateInput
   _avg?: Prisma.RepositoryAvgOrderByAggregateInput
   _max?: Prisma.RepositoryMaxOrderByAggregateInput
@@ -331,6 +378,10 @@ export type RepositoryScalarWhereWithAggregatesInput = {
   defaultBranch?: Prisma.StringWithAggregatesFilter<"Repository"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Repository"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Repository"> | Date | string
+  indexStatus?: Prisma.StringWithAggregatesFilter<"Repository"> | string
+  activeIndexRunId?: Prisma.StringNullableWithAggregatesFilter<"Repository"> | string | null
+  lastIndexedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Repository"> | Date | string | null
+  lastIndexError?: Prisma.StringNullableWithAggregatesFilter<"Repository"> | string | null
 }
 
 export type RepositoryCreateInput = {
@@ -343,9 +394,14 @@ export type RepositoryCreateInput = {
   defaultBranch: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  indexStatus?: string
+  activeIndexRunId?: string | null
+  lastIndexedAt?: Date | string | null
+  lastIndexError?: string | null
   pullRequests?: Prisma.PullRequestCreateNestedManyWithoutRepositoryInput
   issues?: Prisma.IssueCreateNestedManyWithoutRepositoryInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutRepositoryInput
+  codeChunks?: Prisma.CodeChunkCreateNestedManyWithoutRepositoryInput
   user: Prisma.UserCreateNestedOneWithoutRepositoriesInput
 }
 
@@ -360,9 +416,14 @@ export type RepositoryUncheckedCreateInput = {
   defaultBranch: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  indexStatus?: string
+  activeIndexRunId?: string | null
+  lastIndexedAt?: Date | string | null
+  lastIndexError?: string | null
   pullRequests?: Prisma.PullRequestUncheckedCreateNestedManyWithoutRepositoryInput
   issues?: Prisma.IssueUncheckedCreateNestedManyWithoutRepositoryInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutRepositoryInput
+  codeChunks?: Prisma.CodeChunkUncheckedCreateNestedManyWithoutRepositoryInput
 }
 
 export type RepositoryUpdateInput = {
@@ -375,9 +436,14 @@ export type RepositoryUpdateInput = {
   defaultBranch?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  activeIndexRunId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastIndexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastIndexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pullRequests?: Prisma.PullRequestUpdateManyWithoutRepositoryNestedInput
   issues?: Prisma.IssueUpdateManyWithoutRepositoryNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutRepositoryNestedInput
+  codeChunks?: Prisma.CodeChunkUpdateManyWithoutRepositoryNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutRepositoriesNestedInput
 }
 
@@ -392,9 +458,14 @@ export type RepositoryUncheckedUpdateInput = {
   defaultBranch?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  activeIndexRunId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastIndexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastIndexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pullRequests?: Prisma.PullRequestUncheckedUpdateManyWithoutRepositoryNestedInput
   issues?: Prisma.IssueUncheckedUpdateManyWithoutRepositoryNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutRepositoryNestedInput
+  codeChunks?: Prisma.CodeChunkUncheckedUpdateManyWithoutRepositoryNestedInput
 }
 
 export type RepositoryCreateManyInput = {
@@ -408,6 +479,10 @@ export type RepositoryCreateManyInput = {
   defaultBranch: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  indexStatus?: string
+  activeIndexRunId?: string | null
+  lastIndexedAt?: Date | string | null
+  lastIndexError?: string | null
 }
 
 export type RepositoryUpdateManyMutationInput = {
@@ -420,6 +495,10 @@ export type RepositoryUpdateManyMutationInput = {
   defaultBranch?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  activeIndexRunId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastIndexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastIndexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type RepositoryUncheckedUpdateManyInput = {
@@ -433,6 +512,10 @@ export type RepositoryUncheckedUpdateManyInput = {
   defaultBranch?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  activeIndexRunId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastIndexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastIndexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type RepositoryListRelationFilter = {
@@ -456,6 +539,10 @@ export type RepositoryCountOrderByAggregateInput = {
   defaultBranch?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  indexStatus?: Prisma.SortOrder
+  activeIndexRunId?: Prisma.SortOrder
+  lastIndexedAt?: Prisma.SortOrder
+  lastIndexError?: Prisma.SortOrder
 }
 
 export type RepositoryAvgOrderByAggregateInput = {
@@ -473,6 +560,10 @@ export type RepositoryMaxOrderByAggregateInput = {
   defaultBranch?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  indexStatus?: Prisma.SortOrder
+  activeIndexRunId?: Prisma.SortOrder
+  lastIndexedAt?: Prisma.SortOrder
+  lastIndexError?: Prisma.SortOrder
 }
 
 export type RepositoryMinOrderByAggregateInput = {
@@ -486,6 +577,10 @@ export type RepositoryMinOrderByAggregateInput = {
   defaultBranch?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  indexStatus?: Prisma.SortOrder
+  activeIndexRunId?: Prisma.SortOrder
+  lastIndexedAt?: Prisma.SortOrder
+  lastIndexError?: Prisma.SortOrder
 }
 
 export type RepositorySumOrderByAggregateInput = {
@@ -593,6 +688,14 @@ export type RepositoryUpdateOneRequiredWithoutChatSessionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.RepositoryUpdateToOneWithWhereWithoutChatSessionsInput, Prisma.RepositoryUpdateWithoutChatSessionsInput>, Prisma.RepositoryUncheckedUpdateWithoutChatSessionsInput>
 }
 
+export type RepositoryUpdateOneRequiredWithoutCodeChunksNestedInput = {
+  create?: Prisma.XOR<Prisma.RepositoryCreateWithoutCodeChunksInput, Prisma.RepositoryUncheckedCreateWithoutCodeChunksInput>
+  connectOrCreate?: Prisma.RepositoryCreateOrConnectWithoutCodeChunksInput
+  upsert?: Prisma.RepositoryUpsertWithoutCodeChunksInput
+  connect?: Prisma.RepositoryWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.RepositoryUpdateToOneWithWhereWithoutCodeChunksInput, Prisma.RepositoryUpdateWithoutCodeChunksInput>, Prisma.RepositoryUncheckedUpdateWithoutCodeChunksInput>
+}
+
 export type RepositoryCreateWithoutUserInput = {
   id?: string
   githubRepoId: bigint | number
@@ -603,9 +706,14 @@ export type RepositoryCreateWithoutUserInput = {
   defaultBranch: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  indexStatus?: string
+  activeIndexRunId?: string | null
+  lastIndexedAt?: Date | string | null
+  lastIndexError?: string | null
   pullRequests?: Prisma.PullRequestCreateNestedManyWithoutRepositoryInput
   issues?: Prisma.IssueCreateNestedManyWithoutRepositoryInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutRepositoryInput
+  codeChunks?: Prisma.CodeChunkCreateNestedManyWithoutRepositoryInput
 }
 
 export type RepositoryUncheckedCreateWithoutUserInput = {
@@ -618,9 +726,14 @@ export type RepositoryUncheckedCreateWithoutUserInput = {
   defaultBranch: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  indexStatus?: string
+  activeIndexRunId?: string | null
+  lastIndexedAt?: Date | string | null
+  lastIndexError?: string | null
   pullRequests?: Prisma.PullRequestUncheckedCreateNestedManyWithoutRepositoryInput
   issues?: Prisma.IssueUncheckedCreateNestedManyWithoutRepositoryInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutRepositoryInput
+  codeChunks?: Prisma.CodeChunkUncheckedCreateNestedManyWithoutRepositoryInput
 }
 
 export type RepositoryCreateOrConnectWithoutUserInput = {
@@ -663,6 +776,10 @@ export type RepositoryScalarWhereInput = {
   defaultBranch?: Prisma.StringFilter<"Repository"> | string
   createdAt?: Prisma.DateTimeFilter<"Repository"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Repository"> | Date | string
+  indexStatus?: Prisma.StringFilter<"Repository"> | string
+  activeIndexRunId?: Prisma.StringNullableFilter<"Repository"> | string | null
+  lastIndexedAt?: Prisma.DateTimeNullableFilter<"Repository"> | Date | string | null
+  lastIndexError?: Prisma.StringNullableFilter<"Repository"> | string | null
 }
 
 export type RepositoryCreateWithoutPullRequestsInput = {
@@ -675,8 +792,13 @@ export type RepositoryCreateWithoutPullRequestsInput = {
   defaultBranch: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  indexStatus?: string
+  activeIndexRunId?: string | null
+  lastIndexedAt?: Date | string | null
+  lastIndexError?: string | null
   issues?: Prisma.IssueCreateNestedManyWithoutRepositoryInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutRepositoryInput
+  codeChunks?: Prisma.CodeChunkCreateNestedManyWithoutRepositoryInput
   user: Prisma.UserCreateNestedOneWithoutRepositoriesInput
 }
 
@@ -691,8 +813,13 @@ export type RepositoryUncheckedCreateWithoutPullRequestsInput = {
   defaultBranch: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  indexStatus?: string
+  activeIndexRunId?: string | null
+  lastIndexedAt?: Date | string | null
+  lastIndexError?: string | null
   issues?: Prisma.IssueUncheckedCreateNestedManyWithoutRepositoryInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutRepositoryInput
+  codeChunks?: Prisma.CodeChunkUncheckedCreateNestedManyWithoutRepositoryInput
 }
 
 export type RepositoryCreateOrConnectWithoutPullRequestsInput = {
@@ -721,8 +848,13 @@ export type RepositoryUpdateWithoutPullRequestsInput = {
   defaultBranch?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  activeIndexRunId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastIndexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastIndexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issues?: Prisma.IssueUpdateManyWithoutRepositoryNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutRepositoryNestedInput
+  codeChunks?: Prisma.CodeChunkUpdateManyWithoutRepositoryNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutRepositoriesNestedInput
 }
 
@@ -737,8 +869,13 @@ export type RepositoryUncheckedUpdateWithoutPullRequestsInput = {
   defaultBranch?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  activeIndexRunId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastIndexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastIndexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issues?: Prisma.IssueUncheckedUpdateManyWithoutRepositoryNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutRepositoryNestedInput
+  codeChunks?: Prisma.CodeChunkUncheckedUpdateManyWithoutRepositoryNestedInput
 }
 
 export type RepositoryCreateWithoutIssuesInput = {
@@ -751,8 +888,13 @@ export type RepositoryCreateWithoutIssuesInput = {
   defaultBranch: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  indexStatus?: string
+  activeIndexRunId?: string | null
+  lastIndexedAt?: Date | string | null
+  lastIndexError?: string | null
   pullRequests?: Prisma.PullRequestCreateNestedManyWithoutRepositoryInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutRepositoryInput
+  codeChunks?: Prisma.CodeChunkCreateNestedManyWithoutRepositoryInput
   user: Prisma.UserCreateNestedOneWithoutRepositoriesInput
 }
 
@@ -767,8 +909,13 @@ export type RepositoryUncheckedCreateWithoutIssuesInput = {
   defaultBranch: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  indexStatus?: string
+  activeIndexRunId?: string | null
+  lastIndexedAt?: Date | string | null
+  lastIndexError?: string | null
   pullRequests?: Prisma.PullRequestUncheckedCreateNestedManyWithoutRepositoryInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutRepositoryInput
+  codeChunks?: Prisma.CodeChunkUncheckedCreateNestedManyWithoutRepositoryInput
 }
 
 export type RepositoryCreateOrConnectWithoutIssuesInput = {
@@ -797,8 +944,13 @@ export type RepositoryUpdateWithoutIssuesInput = {
   defaultBranch?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  activeIndexRunId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastIndexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastIndexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pullRequests?: Prisma.PullRequestUpdateManyWithoutRepositoryNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutRepositoryNestedInput
+  codeChunks?: Prisma.CodeChunkUpdateManyWithoutRepositoryNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutRepositoriesNestedInput
 }
 
@@ -813,8 +965,13 @@ export type RepositoryUncheckedUpdateWithoutIssuesInput = {
   defaultBranch?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  activeIndexRunId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastIndexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastIndexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pullRequests?: Prisma.PullRequestUncheckedUpdateManyWithoutRepositoryNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutRepositoryNestedInput
+  codeChunks?: Prisma.CodeChunkUncheckedUpdateManyWithoutRepositoryNestedInput
 }
 
 export type RepositoryCreateWithoutChatSessionsInput = {
@@ -827,8 +984,13 @@ export type RepositoryCreateWithoutChatSessionsInput = {
   defaultBranch: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  indexStatus?: string
+  activeIndexRunId?: string | null
+  lastIndexedAt?: Date | string | null
+  lastIndexError?: string | null
   pullRequests?: Prisma.PullRequestCreateNestedManyWithoutRepositoryInput
   issues?: Prisma.IssueCreateNestedManyWithoutRepositoryInput
+  codeChunks?: Prisma.CodeChunkCreateNestedManyWithoutRepositoryInput
   user: Prisma.UserCreateNestedOneWithoutRepositoriesInput
 }
 
@@ -843,8 +1005,13 @@ export type RepositoryUncheckedCreateWithoutChatSessionsInput = {
   defaultBranch: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  indexStatus?: string
+  activeIndexRunId?: string | null
+  lastIndexedAt?: Date | string | null
+  lastIndexError?: string | null
   pullRequests?: Prisma.PullRequestUncheckedCreateNestedManyWithoutRepositoryInput
   issues?: Prisma.IssueUncheckedCreateNestedManyWithoutRepositoryInput
+  codeChunks?: Prisma.CodeChunkUncheckedCreateNestedManyWithoutRepositoryInput
 }
 
 export type RepositoryCreateOrConnectWithoutChatSessionsInput = {
@@ -873,8 +1040,13 @@ export type RepositoryUpdateWithoutChatSessionsInput = {
   defaultBranch?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  activeIndexRunId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastIndexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastIndexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pullRequests?: Prisma.PullRequestUpdateManyWithoutRepositoryNestedInput
   issues?: Prisma.IssueUpdateManyWithoutRepositoryNestedInput
+  codeChunks?: Prisma.CodeChunkUpdateManyWithoutRepositoryNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutRepositoriesNestedInput
 }
 
@@ -889,8 +1061,109 @@ export type RepositoryUncheckedUpdateWithoutChatSessionsInput = {
   defaultBranch?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  activeIndexRunId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastIndexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastIndexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pullRequests?: Prisma.PullRequestUncheckedUpdateManyWithoutRepositoryNestedInput
   issues?: Prisma.IssueUncheckedUpdateManyWithoutRepositoryNestedInput
+  codeChunks?: Prisma.CodeChunkUncheckedUpdateManyWithoutRepositoryNestedInput
+}
+
+export type RepositoryCreateWithoutCodeChunksInput = {
+  id?: string
+  githubRepoId: bigint | number
+  name: string
+  fullName: string
+  owner: string
+  isPrivate: boolean
+  defaultBranch: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  indexStatus?: string
+  activeIndexRunId?: string | null
+  lastIndexedAt?: Date | string | null
+  lastIndexError?: string | null
+  pullRequests?: Prisma.PullRequestCreateNestedManyWithoutRepositoryInput
+  issues?: Prisma.IssueCreateNestedManyWithoutRepositoryInput
+  chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutRepositoryInput
+  user: Prisma.UserCreateNestedOneWithoutRepositoriesInput
+}
+
+export type RepositoryUncheckedCreateWithoutCodeChunksInput = {
+  id?: string
+  userId: string
+  githubRepoId: bigint | number
+  name: string
+  fullName: string
+  owner: string
+  isPrivate: boolean
+  defaultBranch: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  indexStatus?: string
+  activeIndexRunId?: string | null
+  lastIndexedAt?: Date | string | null
+  lastIndexError?: string | null
+  pullRequests?: Prisma.PullRequestUncheckedCreateNestedManyWithoutRepositoryInput
+  issues?: Prisma.IssueUncheckedCreateNestedManyWithoutRepositoryInput
+  chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutRepositoryInput
+}
+
+export type RepositoryCreateOrConnectWithoutCodeChunksInput = {
+  where: Prisma.RepositoryWhereUniqueInput
+  create: Prisma.XOR<Prisma.RepositoryCreateWithoutCodeChunksInput, Prisma.RepositoryUncheckedCreateWithoutCodeChunksInput>
+}
+
+export type RepositoryUpsertWithoutCodeChunksInput = {
+  update: Prisma.XOR<Prisma.RepositoryUpdateWithoutCodeChunksInput, Prisma.RepositoryUncheckedUpdateWithoutCodeChunksInput>
+  create: Prisma.XOR<Prisma.RepositoryCreateWithoutCodeChunksInput, Prisma.RepositoryUncheckedCreateWithoutCodeChunksInput>
+  where?: Prisma.RepositoryWhereInput
+}
+
+export type RepositoryUpdateToOneWithWhereWithoutCodeChunksInput = {
+  where?: Prisma.RepositoryWhereInput
+  data: Prisma.XOR<Prisma.RepositoryUpdateWithoutCodeChunksInput, Prisma.RepositoryUncheckedUpdateWithoutCodeChunksInput>
+}
+
+export type RepositoryUpdateWithoutCodeChunksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  githubRepoId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  owner?: Prisma.StringFieldUpdateOperationsInput | string
+  isPrivate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  defaultBranch?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  activeIndexRunId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastIndexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastIndexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pullRequests?: Prisma.PullRequestUpdateManyWithoutRepositoryNestedInput
+  issues?: Prisma.IssueUpdateManyWithoutRepositoryNestedInput
+  chatSessions?: Prisma.ChatSessionUpdateManyWithoutRepositoryNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutRepositoriesNestedInput
+}
+
+export type RepositoryUncheckedUpdateWithoutCodeChunksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  githubRepoId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  owner?: Prisma.StringFieldUpdateOperationsInput | string
+  isPrivate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  defaultBranch?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  activeIndexRunId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastIndexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastIndexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pullRequests?: Prisma.PullRequestUncheckedUpdateManyWithoutRepositoryNestedInput
+  issues?: Prisma.IssueUncheckedUpdateManyWithoutRepositoryNestedInput
+  chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutRepositoryNestedInput
 }
 
 export type RepositoryCreateManyUserInput = {
@@ -903,6 +1176,10 @@ export type RepositoryCreateManyUserInput = {
   defaultBranch: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  indexStatus?: string
+  activeIndexRunId?: string | null
+  lastIndexedAt?: Date | string | null
+  lastIndexError?: string | null
 }
 
 export type RepositoryUpdateWithoutUserInput = {
@@ -915,9 +1192,14 @@ export type RepositoryUpdateWithoutUserInput = {
   defaultBranch?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  activeIndexRunId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastIndexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastIndexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pullRequests?: Prisma.PullRequestUpdateManyWithoutRepositoryNestedInput
   issues?: Prisma.IssueUpdateManyWithoutRepositoryNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutRepositoryNestedInput
+  codeChunks?: Prisma.CodeChunkUpdateManyWithoutRepositoryNestedInput
 }
 
 export type RepositoryUncheckedUpdateWithoutUserInput = {
@@ -930,9 +1212,14 @@ export type RepositoryUncheckedUpdateWithoutUserInput = {
   defaultBranch?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  activeIndexRunId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastIndexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastIndexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pullRequests?: Prisma.PullRequestUncheckedUpdateManyWithoutRepositoryNestedInput
   issues?: Prisma.IssueUncheckedUpdateManyWithoutRepositoryNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutRepositoryNestedInput
+  codeChunks?: Prisma.CodeChunkUncheckedUpdateManyWithoutRepositoryNestedInput
 }
 
 export type RepositoryUncheckedUpdateManyWithoutUserInput = {
@@ -945,6 +1232,10 @@ export type RepositoryUncheckedUpdateManyWithoutUserInput = {
   defaultBranch?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  activeIndexRunId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastIndexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastIndexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -956,12 +1247,14 @@ export type RepositoryCountOutputType = {
   pullRequests: number
   issues: number
   chatSessions: number
+  codeChunks: number
 }
 
 export type RepositoryCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   pullRequests?: boolean | RepositoryCountOutputTypeCountPullRequestsArgs
   issues?: boolean | RepositoryCountOutputTypeCountIssuesArgs
   chatSessions?: boolean | RepositoryCountOutputTypeCountChatSessionsArgs
+  codeChunks?: boolean | RepositoryCountOutputTypeCountCodeChunksArgs
 }
 
 /**
@@ -995,6 +1288,13 @@ export type RepositoryCountOutputTypeCountChatSessionsArgs<ExtArgs extends runti
   where?: Prisma.ChatSessionWhereInput
 }
 
+/**
+ * RepositoryCountOutputType without action
+ */
+export type RepositoryCountOutputTypeCountCodeChunksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CodeChunkWhereInput
+}
+
 
 export type RepositorySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1007,9 +1307,14 @@ export type RepositorySelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   defaultBranch?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  indexStatus?: boolean
+  activeIndexRunId?: boolean
+  lastIndexedAt?: boolean
+  lastIndexError?: boolean
   pullRequests?: boolean | Prisma.Repository$pullRequestsArgs<ExtArgs>
   issues?: boolean | Prisma.Repository$issuesArgs<ExtArgs>
   chatSessions?: boolean | Prisma.Repository$chatSessionsArgs<ExtArgs>
+  codeChunks?: boolean | Prisma.Repository$codeChunksArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.RepositoryCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["repository"]>
@@ -1025,6 +1330,10 @@ export type RepositorySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   defaultBranch?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  indexStatus?: boolean
+  activeIndexRunId?: boolean
+  lastIndexedAt?: boolean
+  lastIndexError?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["repository"]>
 
@@ -1039,6 +1348,10 @@ export type RepositorySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   defaultBranch?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  indexStatus?: boolean
+  activeIndexRunId?: boolean
+  lastIndexedAt?: boolean
+  lastIndexError?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["repository"]>
 
@@ -1053,13 +1366,18 @@ export type RepositorySelectScalar = {
   defaultBranch?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  indexStatus?: boolean
+  activeIndexRunId?: boolean
+  lastIndexedAt?: boolean
+  lastIndexError?: boolean
 }
 
-export type RepositoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "githubRepoId" | "name" | "fullName" | "owner" | "isPrivate" | "defaultBranch" | "createdAt" | "updatedAt", ExtArgs["result"]["repository"]>
+export type RepositoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "githubRepoId" | "name" | "fullName" | "owner" | "isPrivate" | "defaultBranch" | "createdAt" | "updatedAt" | "indexStatus" | "activeIndexRunId" | "lastIndexedAt" | "lastIndexError", ExtArgs["result"]["repository"]>
 export type RepositoryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   pullRequests?: boolean | Prisma.Repository$pullRequestsArgs<ExtArgs>
   issues?: boolean | Prisma.Repository$issuesArgs<ExtArgs>
   chatSessions?: boolean | Prisma.Repository$chatSessionsArgs<ExtArgs>
+  codeChunks?: boolean | Prisma.Repository$codeChunksArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.RepositoryCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -1076,6 +1394,7 @@ export type $RepositoryPayload<ExtArgs extends runtime.Types.Extensions.Internal
     pullRequests: Prisma.$PullRequestPayload<ExtArgs>[]
     issues: Prisma.$IssuePayload<ExtArgs>[]
     chatSessions: Prisma.$ChatSessionPayload<ExtArgs>[]
+    codeChunks: Prisma.$CodeChunkPayload<ExtArgs>[]
     user: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1089,6 +1408,10 @@ export type $RepositoryPayload<ExtArgs extends runtime.Types.Extensions.Internal
     defaultBranch: string
     createdAt: Date
     updatedAt: Date
+    indexStatus: string
+    activeIndexRunId: string | null
+    lastIndexedAt: Date | null
+    lastIndexError: string | null
   }, ExtArgs["result"]["repository"]>
   composites: {}
 }
@@ -1486,6 +1809,7 @@ export interface Prisma__RepositoryClient<T, Null = never, ExtArgs extends runti
   pullRequests<T extends Prisma.Repository$pullRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Repository$pullRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PullRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   issues<T extends Prisma.Repository$issuesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Repository$issuesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$IssuePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   chatSessions<T extends Prisma.Repository$chatSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Repository$chatSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChatSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  codeChunks<T extends Prisma.Repository$codeChunksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Repository$codeChunksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CodeChunkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1526,6 +1850,10 @@ export interface RepositoryFieldRefs {
   readonly defaultBranch: Prisma.FieldRef<"Repository", 'String'>
   readonly createdAt: Prisma.FieldRef<"Repository", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Repository", 'DateTime'>
+  readonly indexStatus: Prisma.FieldRef<"Repository", 'String'>
+  readonly activeIndexRunId: Prisma.FieldRef<"Repository", 'String'>
+  readonly lastIndexedAt: Prisma.FieldRef<"Repository", 'DateTime'>
+  readonly lastIndexError: Prisma.FieldRef<"Repository", 'String'>
 }
     
 
@@ -1996,6 +2324,30 @@ export type Repository$chatSessionsArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.ChatSessionScalarFieldEnum | Prisma.ChatSessionScalarFieldEnum[]
+}
+
+/**
+ * Repository.codeChunks
+ */
+export type Repository$codeChunksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CodeChunk
+   */
+  select?: Prisma.CodeChunkSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CodeChunk
+   */
+  omit?: Prisma.CodeChunkOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CodeChunkInclude<ExtArgs> | null
+  where?: Prisma.CodeChunkWhereInput
+  orderBy?: Prisma.CodeChunkOrderByWithRelationInput | Prisma.CodeChunkOrderByWithRelationInput[]
+  cursor?: Prisma.CodeChunkWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CodeChunkScalarFieldEnum | Prisma.CodeChunkScalarFieldEnum[]
 }
 
 /**

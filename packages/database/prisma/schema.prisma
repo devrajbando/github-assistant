@@ -2,9 +2,11 @@ generator client {
   provider     = "prisma-client"
   output       = "../src/generated/prisma"
   moduleFormat = "cjs"
+  previewFeatures = ["postgresqlExtensions"]
 }
 datasource db {
   provider = "postgresql"
+  extensions = [vector]
 }
 
 model Account {
@@ -74,8 +76,14 @@ model Repository {
   pullRequests PullRequest[]
   issues       Issue[]
   chatSessions ChatSession[]
+  codeChunks CodeChunk[]
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
+
+  indexStatus      String    @default("NOT_INDEXED") @map("index_status")
+  activeIndexRunId String?   @map("active_index_run_id")
+  lastIndexedAt    DateTime? @map("last_indexed_at")
+  lastIndexError   String?   @db.Text @map("last_index_error")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -181,4 +189,19 @@ model CodeReviewFinding {
   codeReview CodeReview @relation(fields: [codeReviewId], references: [id], onDelete: Cascade)
 
   @@map("code_review_findings")
+}
+
+model CodeChunk {
+  id           String   @id @default(cuid())
+  repositoryId String   @map("repository_id")
+  indexRunId   String   @map("index_run_id")
+  filePath     String   @map("file_path")
+  content      String   @db.Text
+  embedding    Unsupported("vector(768)")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  repository Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+
+  @@index([repositoryId, indexRunId])
+  @@map("code_chunks")
 }

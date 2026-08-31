@@ -72,3 +72,8 @@ export type CodeReview = Prisma.CodeReviewModel
  * 
  */
 export type CodeReviewFinding = Prisma.CodeReviewFindingModel
+/**
+ * Model CodeChunk
+ * 
+ */
+export type CodeChunk = Prisma.CodeChunkModel

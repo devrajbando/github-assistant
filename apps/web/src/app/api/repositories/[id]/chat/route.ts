@@ -1,6 +1,7 @@
 import { prisma } from "database/client";
 import { auth } from "@/auth";
 import { streamChatCompletion, buildRepoContextMessage, ChatMessageInput } from "@/lib/llm";
+import { retrieveCodeContext, formatCodeContextMessage } from "@/lib/retrieve-code-context";
 import { getOrCreateChatSession, getChatMessages, saveChatMessage } from "@/lib/chat-session";
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -32,8 +33,21 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
   const contextMessage = await buildRepoContextMessage(repositoryId);
 
+  let codeContextMessage: ChatMessageInput | null = null;
+  try {
+    const retrievedChunks = await retrieveCodeContext(repositoryId, message);
+    codeContextMessage = formatCodeContextMessage(retrievedChunks);
+  } catch (err) {
+    // A RAG failure (network blip, exhausted retries, whatever) should
+    // degrade to "answer without code context," not take down the
+    // whole chat turn — the user still gets a real answer grounded in
+    // repo/PR/issue context, just not augmented with retrieved code.
+    console.error("retrieveCodeContext failed, continuing without code context:", err);
+  }
+
   const messages: ChatMessageInput[] = [
     contextMessage,
+    ...(codeContextMessage ? [codeContextMessage] : []),
     ...history.map((m) => ({
       role: m.role as ChatMessageInput["role"],
       content: m.content,

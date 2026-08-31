@@ -1,7 +1,7 @@
 import Groq from "groq-sdk";
 import { ChatMessageInput, RetryableLlmError, isRetryableStatus, StreamResult } from "./types";
 
-const MODEL = "llama-3.3-70b-versatile";
+const MODEL = "openai/gpt-oss-120b";
 
 export async function streamFromGroq(
   messages: ChatMessageInput[]
