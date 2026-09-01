@@ -101,7 +101,7 @@ export async function startRepositoryIndexing(repositoryId: string): Promise<voi
  * retrieval keeps serving it — chat degrades to "answering from
  * the last successful index" instead of "answering from nothing."
  */
-async function runIndexJob(repositoryId: string): Promise<{ fileCount: number; chunkCount: number }> {
+async function runIndexJob(repositoryId: string): Promise<{ fileCount: number; chunkCount: number; skippedFileCount: number }> {
   const runId = crypto.randomUUID();
 
   try {
@@ -128,6 +128,8 @@ async function runIndexJob(repositoryId: string): Promise<{ fileCount: number; c
     );
 
     const allChunks: RawChunk[] = [];
+    const skippedBinaryFiles: string[] = [];
+
     for (const file of candidateFiles) {
       const { data: blob } = await octokit.rest.git.getBlob({
         owner: repository.owner,
@@ -135,7 +137,28 @@ async function runIndexJob(repositoryId: string): Promise<{ fileCount: number; c
         file_sha: file.sha!,
       });
       const content = Buffer.from(blob.content, "base64").toString("utf-8");
+
+      // Passing the extension allowlist doesn't guarantee a file is
+      // actually text — a binary file with a text-like extension (or one
+      // with a genuinely broken encoding) still decodes to a "string"
+      // that can contain null bytes. Postgres text columns reject those
+      // outright (error 22021: invalid byte sequence for encoding
+      // "UTF8": 0x00), which previously took down the ENTIRE indexing
+      // run over a single bad file. Skip it instead — the whole repo's
+      // index shouldn't be lost over one unreadable file.
+      if (content.includes("\u0000")) {
+        skippedBinaryFiles.push(file.path!);
+        continue;
+      }
+
       allChunks.push(...chunkFile(file.path!, content));
+    }
+
+    if (skippedBinaryFiles.length > 0) {
+      console.warn(
+        `Skipped ${skippedBinaryFiles.length} file(s) that decoded with null bytes (likely binary) while indexing repository ${repositoryId}:`,
+        skippedBinaryFiles
+      );
     }
 
     for (let i = 0; i < allChunks.length; i += EMBED_BATCH_SIZE) {
@@ -174,7 +197,7 @@ async function runIndexJob(repositoryId: string): Promise<{ fileCount: number; c
       }),
     ]);
 
-    return { fileCount: candidateFiles.length, chunkCount: allChunks.length };
+    return { fileCount: candidateFiles.length, chunkCount: allChunks.length, skippedFileCount: skippedBinaryFiles.length };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
 

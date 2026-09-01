@@ -1,4 +1,3 @@
-
 import Link from "next/link";
 import { auth } from "@/auth";
 import { prisma } from "database/client";
@@ -19,6 +18,8 @@ import StatChip from "@/components/StatChip";
 import RepositoryHealth from "@/components/RepositoryHealth";
 import DeveloperOnboarding from "@/components/DeveloperOnboarding";
 import ArchitectureDiagramPanel from "@/components/ArchitectureDiagramPanel";
+import RepoSearch from "@/components/RepoSearch";
+import { IndexStatusProvider } from "@/lib/index-status-content";
 
 type HealthStatus =
   | "NOT_COMPUTED"
@@ -108,6 +109,13 @@ export default async function RepositoryDetailPage({
 
   return (
     <main className="mx-auto w-full max-w-5xl px-5 py-8 sm:px-8 sm:py-12">
+      <IndexStatusProvider
+        initialStatus={repository.indexStatus as IndexStatus}
+        initialLastIndexedAt={
+          repository.lastIndexedAt?.toISOString() ?? null
+        }
+        initialCurrentIndexRunId={repository.activeIndexRunId}
+      >
       {/* ─────────────────────────────────────────────
           Back navigation
       ───────────────────────────────────────────── */}
@@ -115,7 +123,7 @@ export default async function RepositoryDetailPage({
         href="/repositories"
         className="mb-7 inline-flex items-center gap-1.5 font-mono-ui text-[11px] uppercase tracking-wide text-paper-dim transition-colors hover:text-phosphor"
       >
-        ← back to index
+        ← back to repositories
       </Link>
 
       {/* ─────────────────────────────────────────────
@@ -152,15 +160,26 @@ export default async function RepositoryDetailPage({
             </div>
           </div>
 
-          <form action={syncPullRequestsAndIssuesAction}>
-            <input
-              type="hidden"
-              name="repositoryId"
-              value={repository.id}
-            />
+          <div className="flex items-start gap-3">
+            <form action={syncPullRequestsAndIssuesAction}>
+              <input
+                type="hidden"
+                name="repositoryId"
+                value={repository.id}
+              />
 
-            <SyncButton />
-          </form>
+              <SyncButton
+                lastSyncedAt={
+                  repository.lastSyncedAt?.toISOString() ?? null
+                }
+              />
+            </form>
+
+            <IndexRepositoryButton
+              repositoryId={repository.id}
+              initialError={repository.lastIndexError}
+            />
+          </div>
         </div>
       </header>
 
@@ -290,12 +309,6 @@ export default async function RepositoryDetailPage({
 
           <ArchitectureDiagramPanel
             repositoryId={repository.id}
-            indexStatus={
-              repository.indexStatus as IndexStatus
-            }
-            currentIndexRunId={
-              repository.activeIndexRunId
-            }
             initialDiagram={
               latestDiagram
                 ? {
@@ -315,6 +328,15 @@ export default async function RepositoryDetailPage({
                   }
                 : null
             }
+          />
+        </section>
+
+        {/* Code search */}
+        <section>
+          <SectionHeading label="Code search" />
+
+          <RepoSearch
+            repositoryId={repository.id}
           />
         </section>
       </div>
@@ -397,41 +419,21 @@ export default async function RepositoryDetailPage({
           AI Copilot
       ───────────────────────────────────────────── */}
       <section className="mt-12 border-t border-panel-border pt-8">
-        <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <h2 className="font-mono-ui text-sm font-semibold uppercase tracking-[0.08em] text-paper">
-                AI Copilot
-              </h2>
+        <div className="mb-4 space-y-1">
+          <div className="flex items-center gap-2">
+            <h2 className="font-mono-ui text-sm font-semibold uppercase tracking-[0.08em] text-paper">
+              AI Copilot
+            </h2>
 
-              <span className="border border-panel-border px-1.5 py-0.5 font-mono-ui text-[9px] uppercase tracking-wider text-paper-dim">
-                ASSISTANT
-              </span>
-            </div>
-
-            <p className="max-w-xl text-xs leading-relaxed text-paper-dim">
-              Ask questions and get help understanding this
-              repository.
-            </p>
+            <span className="border border-panel-border px-1.5 py-0.5 font-mono-ui text-[9px] uppercase tracking-wider text-paper-dim">
+              ASSISTANT
+            </span>
           </div>
 
-          <div className="flex flex-col items-end gap-1.5">
-            <IndexRepositoryButton
-              repositoryId={repository.id}
-              initialStatus={
-                repository.indexStatus as IndexStatus
-              }
-              initialLastIndexedAt={
-                repository.lastIndexedAt?.toISOString() ??
-                null
-              }
-              initialError={repository.lastIndexError}
-            />
-
-            <p className="max-w-xs text-right font-mono-ui text-[9px] leading-relaxed text-paper-dim">
-              INDEXING ENABLES COPILOT TO UNDERSTAND YOUR CODEBASE.
-            </p>
-          </div>
+          <p className="max-w-xl text-xs leading-relaxed text-paper-dim">
+            Ask questions and get help understanding this
+            repository.
+          </p>
         </div>
 
         <ChatPanel
@@ -445,6 +447,7 @@ export default async function RepositoryDetailPage({
           }))}
         />
       </section>
+      </IndexStatusProvider>
     </main>
   );
 }
@@ -488,4 +491,3 @@ function EmptyRow({
     </div>
   );
 }
-

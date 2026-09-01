@@ -17,6 +17,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       indexStatus: true,
       lastIndexedAt: true,
       lastIndexError: true,
+      activeIndexRunId: true,
     },
   });
 
@@ -28,6 +29,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     status: repository.indexStatus,
     lastIndexedAt: repository.lastIndexedAt,
     lastIndexError: repository.lastIndexError,
+    activeIndexRunId: repository.activeIndexRunId,
   });
 }
 

@@ -5,7 +5,12 @@ import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Highlight, type Language, type PrismTheme } from "prism-react-renderer";
-
+import SourceChunk from "@/components/SourceChunk";
+type MessageSource = {
+  id: string;
+  filePath: string;
+  content: string;
+};
 type ChatMessage = {
   id: string;
   role: string;
@@ -14,8 +19,8 @@ type ChatMessage = {
   model?: string | null;
   status?: "error";
   requestText?: string; // only set on assistant messages sent this session — needed to retry
+  sources?: MessageSource[];
 };
-
 type ChatPanelProps = {
   repositoryId: string;
   initialMessages: ChatMessage[];
@@ -86,7 +91,7 @@ export default function ChatPanel({ repositoryId, initialMessages }: ChatPanelPr
   const [hasNewBelow, setHasNewBelow] = useState(false);
   const [panelSize, setPanelSize] = useState(() => loadStoredPanelSize());
   const [isResizing, setIsResizing] = useState(false);
-
+  const [viewingSource, setViewingSource] = useState<MessageSource | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const resizeStartRef = useRef<{ x: number; y: number; width: number; height: number } | null>(null);
@@ -183,7 +188,19 @@ export default function ChatPanel({ repositoryId, initialMessages }: ChatPanelPr
       });
 
       if (!res.ok || !res.body) throw new Error(`request failed (${res.status})`);
-
+      const sourcesHeader = res.headers.get("X-Chat-Sources");
+      if (sourcesHeader) {
+        try {
+          const sources: MessageSource[] = JSON.parse(atob(sourcesHeader));
+          if (sources.length > 0) {
+            setMessages((prev) =>
+              prev.map((m) => (m.id === assistantId ? { ...m, sources } : m))
+            );
+          }
+        } catch {
+          // Malformed header shouldn't break the chat reply itself.
+        }
+      }
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let receivedAny = false;
@@ -341,7 +358,13 @@ export default function ChatPanel({ repositoryId, initialMessages }: ChatPanelPr
               </p>
             )}
             {messages.map((m) => (
-              <ChatBubble key={m.id} message={m} onRetry={handleRetry} sending={sending} />
+              <ChatBubble
+                key={m.id}
+                message={m}
+                onRetry={handleRetry}
+                sending={sending}
+                onViewSource={setViewingSource}
+              />
             ))}
           </div>
 
@@ -380,6 +403,33 @@ export default function ChatPanel({ repositoryId, initialMessages }: ChatPanelPr
           </button>
         </form>
       </div>
+      {viewingSource && (
+        <div
+          className="fixed inset-0 z-80 flex items-center justify-center bg-black/60 p-4"
+          onClick={() => setViewingSource(null)}
+        >
+          <div
+            className="max-h-[80vh] w-full max-w-2xl overflow-y-auto rounded-md border border-panel-border bg-panel"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-panel-border px-4 py-2.5">
+              <span className="font-mono-ui text-[11px] uppercase tracking-wide text-paper-dim">
+                Source
+              </span>
+              <button
+                type="button"
+                onClick={() => setViewingSource(null)}
+                className="text-paper-dim transition-colors hover:text-phosphor"
+              >
+                x
+              </button>
+            </div>
+            <div className="p-4">
+              <SourceChunk filePath={viewingSource.filePath} content={viewingSource.content} />
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
@@ -410,10 +460,12 @@ function ChatBubble({
   message,
   onRetry,
   sending,
+  onViewSource,
 }: {
   message: ChatMessage;
   onRetry: (m: ChatMessage) => void;
   sending: boolean;
+  onViewSource: (s: MessageSource) => void;
 }) {
   const isUser = message.role === "user";
   const isError = message.status === "error";
@@ -453,6 +505,20 @@ function ChatBubble({
             >
               Retry
             </button>
+          </div>
+        )}
+        {message.sources && message.sources.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-1.5 border-t border-panel-border pt-2">
+            {message.sources.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => onViewSource(s)}
+                className="rounded border border-panel-border px-2 py-1 font-mono-ui text-[10px]text-paper-dim transition-colors hover:border-phosphor-dim hover:text-phosphor"
+              >
+                {s.filePath}
+              </button>
+            ))}
           </div>
         )}
       </div>

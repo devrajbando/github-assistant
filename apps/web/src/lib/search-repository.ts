@@ -3,11 +3,12 @@ import { toSql } from "pgvector";
 import { embedTexts } from "./embeddings";
 import type { ChatMessageInput } from "./llm";
 
-export interface SearchResult {
-  filePath: string;
-  content: string;
-  distance: number;
-}
+ export interface SearchResult {
+   id: string;
+   filePath: string;
+   content: string;
+   distance: number;
+ }
 
 const DEFAULT_LIMIT = 8;
 
@@ -56,9 +57,10 @@ export async function searchRepository(
   const vector = toSql(queryEmbedding);
 
   const results = await prisma.$queryRaw<
-    { file_path: string; content: string; distance: number }[]
+    { id: string; file_path: string; content: string; distance: number }[]
   >`
     SELECT
+    id,
       file_path,
       content,
       embedding <=> ${vector}::vector AS distance
@@ -70,6 +72,7 @@ export async function searchRepository(
   `;
 
   return results.map((r) => ({
+    id:r.id,
     filePath: r.file_path,
     content: r.content,
     distance: r.distance,

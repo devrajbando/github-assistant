@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
@@ -265,7 +266,7 @@ if (!response.ok) {
         <button
           type="button"
           onClick={() => setOpen((value) => !value)}
-          className="border border-panel-border px-3 py-1.5 font-mono-ui text-[10px] uppercase tracking-wide text-paper-dim transition hover:border-phosphor-dim hover:text-phosphor focus-visible:outline focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2"
+          className="border border-panel-border px-3 py-1.5 font-mono-ui text-[10px] uppercase tracking-wide text-paper-dim transition hover:border-phosphor-dim hover:text-phosphor focus-visible:outline focus-visible:outline-paper focus-visible:outline-offset-2"
         >
           {open ? "HIDE" : "VIEW"}
         </button>
@@ -279,7 +280,7 @@ if (!response.ok) {
                 ONBOARDING GUIDE NOT GENERATED
               </p>
 
-              <p className="mx-auto mt-2 max-w-md font-mono-ui text-[10px] leading-5 text-paper-dim">
+              <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-paper-dim">
                 Generate an AI-powered guide to help a new developer
                 understand this repository and start contributing.
               </p>
@@ -306,7 +307,7 @@ if (!response.ok) {
                   GENERATING ONBOARDING
                 </p>
 
-                <p className="mt-1 font-mono-ui text-[10px] text-paper-dim">
+                <p className="mt-1 text-sm text-paper-dim">
                   Analyzing repository context and preparing developer guidance...
                 </p>
               </div>
@@ -319,7 +320,7 @@ if (!response.ok) {
                 ONBOARDING GENERATION FAILED
               </p>
 
-              <p className="mt-2 break-words font-mono-ui text-[10px] leading-5 text-paper-dim">
+              <p className="mt-2 wrap-break-word text-sm leading-6 text-paper-dim">
                 {guide?.lastError ?? "Unknown generation error."}
               </p>
 
@@ -344,29 +345,72 @@ if (!response.ok) {
                   remarkPlugins={[remarkGfm]}
                   components={{
                     h1: ({ children }) => (
-                      <h2 className="mb-4 mt-7 border-b border-panel-border pb-2 font-display text-sm uppercase tracking-wide text-paper first:mt-0">
+                      <h2 className="mb-4 mt-9 border-b border-panel-border pb-2 text-lg font-semibold text-paper first:mt-0 sm:text-xl">
                         {children}
                       </h2>
                     ),
                     h2: ({ children }) => (
-                      <h3 className="mb-3 mt-5 font-display text-xs uppercase tracking-wide text-paper">
+                      <h3 className="mb-3 mt-7 text-base font-semibold text-paper sm:text-lg">
                         {children}
                       </h3>
                     ),
-                    p: ({ children }) => (
-                      <p className="mb-3 font-mono-ui text-[10px] leading-5 text-paper-dim">
+                    h3: ({ children }) => (
+                      <h4 className="mb-2 mt-5 text-sm font-semibold text-paper sm:text-base">
                         {children}
-                      </p>
+                      </h4>
+                    ),
+                    p: ({ children }) => (
+                      <p className="mb-4 text-[15px] leading-7 text-paper">{children}</p>
+                    ),
+                    ul: ({ children }) => (
+                      <ul className="mb-4 ml-5 list-disc space-y-1.5 marker:text-phosphor-dim/70">
+                        {children}
+                      </ul>
+                    ),
+                    ol: ({ children }) => (
+                      <ol className="mb-4 ml-5 list-decimal space-y-1.5 marker:text-phosphor-dim/70">
+                        {children}
+                      </ol>
                     ),
                     li: ({ children }) => (
-                      <li className="font-mono-ui text-[10px] leading-5 text-paper-dim">
-                        {children}
-                      </li>
+                      <li className="text-[15px] leading-7 text-paper">{children}</li>
                     ),
-                    code: ({ children }) => (
-                      <code className="border border-panel-border bg-console px-1 py-0.5 font-mono-ui text-[10px] text-phosphor">
+                    strong: ({ children }) => (
+                      <strong className="font-semibold text-paper">{children}</strong>
+                    ),
+                    a: ({ children, href }) => (
+                      <a
+                        href={href}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-phosphor underline decoration-phosphor-dim underline-offset-2 hover:text-phosphor"
+                      >
                         {children}
-                      </code>
+                      </a>
+                    ),
+                    code: ({ className, children }) => {
+                      // Fenced code blocks get a language- className from
+                      // remark; inline code doesn't. Different styling for
+                      // each — a block needs its own <pre> treatment, not
+                      // the tight inline-code pill.
+                      const isBlock = Boolean(className);
+                      if (isBlock) {
+                        return (
+                          <code className={`font-mono text-[13px] leading-6 text-paper ${className ?? ""}`}>
+                            {children}
+                          </code>
+                        );
+                      }
+                      return (
+                        <code className="rounded border border-panel-border bg-console px-1.5 py-0.5 font-mono text-[13px] text-phosphor">
+                          {children}
+                        </code>
+                      );
+                    },
+                    pre: ({ children }) => (
+                      <pre className="mb-4 overflow-x-auto rounded-md border border-panel-border bg-console p-4">
+                        {children}
+                      </pre>
                     ),
                   }}
                 >
@@ -376,13 +420,11 @@ if (!response.ok) {
 
               {/* Checklist */}
               {guide.checklistItems.length > 0 && (
-                <section className="mt-7 border-t border-panel-border pt-5">
+                <section className="mt-8 border-t border-panel-border pt-6">
                   <div className="mb-4">
-                    <p className="font-display text-xs uppercase tracking-wide text-paper">
-                      ONBOARDING CHECKLIST
-                    </p>
+                    <p className="text-base font-semibold text-paper">Onboarding checklist</p>
 
-                    <p className="mt-1 font-mono-ui text-[10px] text-paper-dim">
+                    <p className="mt-1 text-sm text-paper-dim">
                       Track your progress through the repository.
                     </p>
                   </div>
@@ -394,12 +436,12 @@ if (!response.ok) {
                         type="button"
                         onClick={() => toggleChecklist(item)}
                         disabled={updatingItemId === item.id}
-                        className={`group flex w-full items-start gap-3 border border-panel-border p-3 text-left transition hover:border-phosphor-dim disabled:cursor-wait disabled:opacity-70 ${
+                        className={`group flex w-full items-start gap-3 rounded border border-panel-border p-3.5 text-left transition hover:border-phosphor-dim disabled:cursor-wait disabled:opacity-70 ${
                         updatingItemId === item.id ? "cursor-wait" : ""
                         }`}
                       >
                         <span
-                          className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center border ${
+                          className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border ${
                             item.isCompleted
                               ? "border-phosphor bg-phosphor text-console"
                               : "border-panel-border"
@@ -410,7 +452,7 @@ if (!response.ok) {
 
                         <span className="min-w-0 flex-1">
                           <span
-                            className={`block font-mono-ui text-[11px] uppercase ${
+                            className={`block text-sm font-medium ${
                               item.isCompleted
                                 ? "text-phosphor line-through"
                                 : "text-paper"
@@ -420,14 +462,14 @@ if (!response.ok) {
                           </span>
 
                           {item.description && (
-                            <span className="mt-1 block font-mono-ui text-[10px] leading-5 text-paper-dim">
+                            <span className="mt-1 block text-sm leading-6 text-paper-dim">
                               {item.description}
                             </span>
                           )}
 
                           {item.category && (
-                            <span className="mt-2 inline-block font-mono-ui text-[9px] uppercase tracking-wide text-paper-dim">
-                              [{item.category}]
+                            <span className="mt-2 inline-flex items-center rounded-full border border-panel-border px-2 py-0.5 font-mono-ui text-[10px] uppercase tracking-wide text-phosphor-dim">
+                              {item.category}
                             </span>
                           )}
                         </span>
@@ -438,14 +480,9 @@ if (!response.ok) {
               )}
 
               {guide.generatedAt && (
-                <div className="mt-6 border-t border-panel-border pt-3 font-mono-ui text-[9px] text-paper-dim">
-                  GENERATED:{" "}
-                  {new Date(
-                    guide.generatedAt,
-                  ).toLocaleString()}
-                  {guide.provider && (
-                    <> · {guide.provider.toUpperCase()}</>
-                  )}
+                <div className="mt-6 border-t border-panel-border pt-3 font-mono-ui text-[10.5px] text-paper-dim">
+                  Generated {new Date(guide.generatedAt).toLocaleString()}
+                  {guide.provider && <> · {guide.provider.toUpperCase()}</>}
                 </div>
               )}
             </>

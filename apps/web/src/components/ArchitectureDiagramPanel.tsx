@@ -1,8 +1,8 @@
-
 "use client";
 
 import { useEffect, useRef, useState } from "react";
 import { rockerBtnClass } from "@/lib/ui-classes";
+import { useIndexStatus } from "@/lib/index-status-content";
 
 type DiagramStatus = "pending" | "completed" | "failed";
 
@@ -17,17 +17,14 @@ type Diagram = {
 
 type Props = {
   repositoryId: string;
-  indexStatus: string;
-  currentIndexRunId: string | null;
   initialDiagram: Diagram | null;
 };
 
 export default function ArchitectureDiagramPanel({
   repositoryId,
-  indexStatus,
-  currentIndexRunId,
   initialDiagram,
 }: Props) {
+  const { status: indexStatus, currentIndexRunId } = useIndexStatus();
   const [diagram, setDiagram] = useState<Diagram | null>(initialDiagram);
   const [generating, setGenerating] = useState(false);
   const [renderError, setRenderError] = useState<string | null>(null);
@@ -270,4 +267,3 @@ export default function ArchitectureDiagramPanel({
     </section>
   );
 }
-

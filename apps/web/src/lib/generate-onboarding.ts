@@ -146,13 +146,14 @@ The guide must be Markdown and contain exactly these sections:
 # Contribution Guide
 
 Rules:
+- Write in clear, friendly, plain English — like explaining the repo to a new teammate in person, not filing a report. Short sentences. Explain any term that isn't common knowledge.
 - Do not fabricate files, technologies, commands, architecture, or workflows.
-- If information is unavailable, explicitly say:
-  "Not established from the available repository data."
+- If information is unavailable, say so naturally, e.g. "That's not clear from what's synced yet — worth asking a teammate." Don't repeat the exact same stock phrase every time; vary it so the guide doesn't read like a template.
 - Clearly distinguish known facts from reasonable inferences.
 - Prefer concrete repository information over generic software-development advice.
 - Create 5-10 useful checklist items.
 - Checklist items must be practical actions for a new developer.
+- Checklist titles and descriptions should read naturally too — plain English, not clipped fragments.
 - Use stable kebab-case keys.
 - Return no Markdown code fence around the JSON.
 `;
@@ -161,7 +162,7 @@ Rules:
       {
         role: "system",
         content:
-          "You are a senior software engineer creating repository onboarding documentation. Ground every statement in the supplied repository data.",
+          "You are a senior software engineer creating repository onboarding documentation for a new developer. Ground every statement in the supplied repository data. Write like a helpful, friendly teammate explaining things over coffee — clear, plain English, short sentences. Avoid unnecessary jargon; if a technical term is genuinely necessary, briefly explain it the first time you use it. This is being read by someone who wants to feel welcomed and oriented, not audited.",
       },
       {
         role: "user",

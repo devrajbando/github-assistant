@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import { streamChatCompletion, buildRepoContextMessage, ChatMessageInput } from "@/lib/llm";
 import { searchRepository, formatCodeContextMessage } from "@/lib/search-repository";
 import { getOrCreateChatSession, getChatMessages, saveChatMessage } from "@/lib/chat-session";
-
+import type { MessageSource } from "@/lib/chat-session";
 // Kept smaller than the standalone search UI's default (8) — this
 // count was what the RAG feature was originally verified against,
 // and every extra chunk here is prompt budget shared with the full
@@ -40,9 +40,15 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const contextMessage = await buildRepoContextMessage(repositoryId);
 
   let codeContextMessage: ChatMessageInput | null = null;
+  let retrievedSources: MessageSource[] = [];
   try {
     const results = await searchRepository(repositoryId, message, CHAT_CODE_CONTEXT_LIMIT);
     codeContextMessage = formatCodeContextMessage(results);
+    retrievedSources = results.map((r) => ({
+      id: r.id,
+      filePath: r.filePath,
+      content: r.content,
+    }));
   } catch (err) {
     // A RAG failure (not indexed yet, network blip, exhausted
     // retries, whatever) should degrade to "answer without code
@@ -86,6 +92,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
           content: fullText,
           provider,
           model,
+          sources: retrievedSources.length > 0 ? retrievedSources : undefined,
         });
         controller.close();
       }
@@ -93,6 +100,13 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   });
 
   return new Response(readable, {
-    headers: { "Content-Type": "text/plain; charset=utf-8" },
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      // Sources are known before the stream starts (retrieval already
+      // ran), so they ride as a header rather than needing an in-band
+      // delimiter inside the plain-text stream. Base64'd since header
+      // values must be ASCII-safe and chunk content isn't.
+      "X-Chat-Sources": Buffer.from(JSON.stringify(retrievedSources)).toString("base64"),
+    },
   });
 }

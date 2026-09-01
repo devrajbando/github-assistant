@@ -94,5 +94,10 @@ export async function syncPullRequestsAndIssuesForRepo(repositoryId: string) {
     issueCount++;
   }
 
+  await prisma.repository.update({
+    where: { id: repositoryId },
+    data: { lastSyncedAt: new Date() },
+  });
+
   return { prCount, issueCount };
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // apps/web/src/lib/compute-repo-health.ts
 import { prisma } from "database/client";
 import { execFile } from "child_process";
@@ -18,6 +19,14 @@ const DOC_RATIO_EXTENSIONS = new Set(["ts", "tsx", "js", "jsx"]);
 const EXCLUDED_PATH_SUBSTRINGS = ["node_modules/", "dist/", "build/", ".next/", "generated/", "/.git/"];
 const MAX_FILE_SIZE_BYTES = 200_000;
 const HIGH_COMPLEXITY_THRESHOLD = 30; // decision points in a single file
+
+// Safety valve for very large repos — fetching one blob per file with no
+// cap turns into thousands of sequential GitHub API calls, which is slow
+// and risks GitHub's secondary rate limits (the same problem
+// index-repository.ts already solved for indexing via batching). Most
+// repos never hit this; it only kicks in for genuinely huge ones.
+const MAX_FILES_TO_FETCH = 500;
+const BLOB_FETCH_CONCURRENCY = 8;
 
 // Deliberately conservative regex set — false negatives (missed decision
 // points) are safer than false positives here, since this score is
@@ -70,6 +79,46 @@ interface FetchedFile {
   content: string;
 }
 
+// Evenly-spaced sample rather than a truncated prefix when over the cap
+// — the tree API's ordering isn't meaningful, so taking just the first
+// N would bias toward whatever happens to sort first rather than a
+// representative slice of the repo.
+function sampleEntries<T>(entries: T[], max: number): T[] {
+  if (entries.length <= max) return entries;
+  const stride = entries.length / max;
+  const sampled: T[] = [];
+  for (let i = 0; i < max; i++) {
+    sampled.push(entries[Math.floor(i * stride)]);
+  }
+  return sampled;
+}
+
+async function fetchBlobs(
+  octokit: ReturnType<typeof createGitHubClient>,
+  owner: string,
+  repo: string,
+  entries: { path: string; sha?: string }[]
+): Promise<FetchedFile[]> {
+  const results: FetchedFile[] = [];
+  let cursor = 0;
+
+  async function worker() {
+    while (cursor < entries.length) {
+      const entry = entries[cursor];
+      cursor += 1;
+      if (!entry.sha) continue;
+      const { data: blob } = await octokit.rest.git.getBlob({ owner, repo, file_sha: entry.sha });
+      results.push({ path: entry.path, content: Buffer.from(blob.content, "base64").toString("utf-8") });
+    }
+  }
+
+  await Promise.all(
+    Array.from({ length: Math.min(BLOB_FETCH_CONCURRENCY, entries.length) }, worker)
+  );
+
+  return results;
+}
+
 async function fetchRepoFiles(
   octokit: ReturnType<typeof createGitHubClient>,
   owner: string,
@@ -93,11 +142,14 @@ async function fetchRepoFiles(
     return CODE_EXTENSIONS.has(extOf(e.path!));
   });
 
-  const files: FetchedFile[] = [];
-  for (const entry of codeEntries) {
-    const { data: blob } = await octokit.rest.git.getBlob({ owner, repo, file_sha: entry.sha! });
-    files.push({ path: entry.path!, content: Buffer.from(blob.content, "base64").toString("utf-8") });
-  }
+  const sampledCodeEntries = sampleEntries(codeEntries, MAX_FILES_TO_FETCH);
+
+  const files = await fetchBlobs(
+    octokit,
+    owner,
+    repo,
+    sampledCodeEntries.map((e) => ({ path: e.path!, sha: e.sha }))
+  );
 
   const lockEntry = entries.find((e) => e.path === "package-lock.json");
   const pkgEntry = entries.find((e) => e.path === "package.json");
@@ -147,9 +199,20 @@ async function computeSecurity(packageJsonContent: string | null, packageLockCon
     // npm audit exits non-zero when vulnerabilities are found — that's
     // expected, not a failure. --package-lock-only means no install, no
     // scripts run, just the lockfile checked against the advisory DB.
+    //
+    // The whole function is wrapped (see outer try/catch below) so that
+    // ANY failure here — registry unreachable, timeout, malformed JSON
+    // output, npm not present in this runtime — degrades to "security
+    // score unavailable" rather than throwing away complexity/
+    // documentation/activity, which were already computed successfully
+    // by the time this runs.
     let stdout = "";
     try {
-      const result = await execFileAsync("npm", ["audit", "--package-lock-only", "--json"], { cwd: dir });
+      const result = await execFileAsync(
+        "npm",
+        ["audit", "--package-lock-only", "--json"],
+        { cwd: dir, timeout: 30_000 }
+      );
       stdout = result.stdout;
     } catch (err: any) {
       if (typeof err?.stdout === "string" && err.stdout.length > 0) {
@@ -167,6 +230,9 @@ async function computeSecurity(packageJsonContent: string | null, packageLockCon
       moderate: bySeverity.moderate ?? 0,
       low: bySeverity.low ?? 0,
     };
+  } catch (err) {
+    console.error("computeSecurity failed, degrading to no security score for this run:", err);
+    return null;
   } finally {
     await rm(dir, { recursive: true, force: true });
   }

@@ -167,7 +167,7 @@ function LoadingState() {
           ANALYZING REPOSITORY
         </p>
 
-        <p className="mt-1 font-mono-ui text-[10px] text-paper-dim">
+        <p className="mt-1 text-sm text-paper-dim">
           Scanning source, dependencies, documentation and activity…
         </p>
       </div>
@@ -201,7 +201,7 @@ function EmptyState({
           Health profile unavailable
         </p>
 
-        <p className="mt-2 font-mono-ui text-[10px] leading-5 text-paper-dim">
+        <p className="mt-2 text-sm leading-6 text-paper-dim">
           Run a repository analysis to calculate security, complexity,
           documentation and activity metrics.
         </p>
@@ -239,7 +239,7 @@ function ErrorState({
               HEALTH COMPUTATION FAILED
             </p>
 
-            <p className="mt-2 break-words font-mono-ui text-[10px] leading-5 text-paper-dim">
+            <p className="mt-2 break-words text-sm leading-6 text-paper-dim">
               {error}
             </p>
 
@@ -247,7 +247,7 @@ function ErrorState({
               type="button"
               onClick={onRetry}
               disabled={computing}
-              className="mt-4 border border-panel-border px-3 py-1.5 font-mono-ui text-[10px] uppercase tracking-wide text-paper-dim transition hover:border-phosphor-dim hover:text-phosphor disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2"
+              className="mt-4 border border-panel-border px-3 py-1.5 font-mono-ui text-[10px] uppercase tracking-wide text-paper-dim transition hover:border-phosphor-dim hover:text-phosphor disabled:opacity-50 focus-visible:outline focus-visible:outline-paper focus-visible:outline-offset-2"
             >
               {computing ? "RETRYING…" : "RETRY ANALYSIS"}
             </button>
@@ -266,7 +266,7 @@ function HealthContent({ score }: { score: HealthScore }) {
       {/* Score + summary */}
       <div className="grid gap-5 lg:grid-cols-[220px_1fr]">
         <div
-          className={`flex min-h-[190px] flex-col items-center justify-center border ${tone.border} ${tone.bg}`}
+          className={`flex min-h-47.5 flex-col items-center justify-center border ${tone.border} ${tone.bg}`}
         >
           <span className="font-mono-ui text-[10px] uppercase tracking-[0.2em] text-paper-dim">
             OVERALL
@@ -330,12 +330,31 @@ function HealthContent({ score }: { score: HealthScore }) {
   </div>
 
   {score.securityScore === null ? (
-    <p className="font-mono-ui text-[10px] leading-5 text-paper-dim">
+    <p className="text-sm leading-6 text-paper-dim">
       No package-lock.json found — dependency audit not applicable to this repository.
     </p>
   ) : (
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-      {/* existing four DetailStat blocks, unchanged */}
+      <DetailStat
+        label="Critical"
+        value={score.vulnerabilityCriticalCount}
+        tone={score.vulnerabilityCriticalCount > 0 ? "text-rust" : "text-phosphor"}
+      />
+      <DetailStat
+        label="High"
+        value={score.vulnerabilityHighCount}
+        tone={score.vulnerabilityHighCount > 0 ? "text-rust" : "text-phosphor"}
+      />
+      <DetailStat
+        label="Moderate"
+        value={score.vulnerabilityModerateCount}
+        tone={score.vulnerabilityModerateCount > 0 ? "text-amber" : "text-phosphor"}
+      />
+      <DetailStat
+        label="Low"
+        value={score.vulnerabilityLowCount}
+        tone={score.vulnerabilityLowCount > 0 ? "text-amber" : "text-phosphor"}
+      />
     </div>
   )}
 </section>
@@ -570,7 +589,7 @@ export default function RepositoryHealth({
         ? "Hide repository health"
         : "View repository health"
     }
-    className="border border-panel-border px-2 py-1 font-mono-ui text-[9px] uppercase tracking-wide text-paper-dim transition hover:border-phosphor-dim hover:text-phosphor focus-visible:outline focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2"
+    className="border border-panel-border px-2 py-1 font-mono-ui text-[9px] uppercase tracking-wide text-paper-dim transition hover:border-phosphor-dim hover:text-phosphor focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2"
   >
     {isExpanded ? "HIDE" : "VIEW"}
   </button>
@@ -594,7 +613,7 @@ export default function RepositoryHealth({
         <div className="border-t border-panel-border px-4 py-3 font-mono-ui text-[9px] text-paper-dim">
         LAST COMPUTED:{" "}
         {computedAt
-          ? new Date(computedAt).toISOString()
+          ? new Date(computedAt).toLocaleString()
           : "UNKNOWN"}
       </div>
       </>

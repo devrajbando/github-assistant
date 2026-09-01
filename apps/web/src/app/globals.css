@@ -80,3 +80,19 @@ body {
 .console-line {
   animation: line-in 0.35s ease forwards;
 }
+
+/* Add to globals.css (or wherever rockerBtnClass and other shared
+   button styles live). Used by SyncButton and IndexRepositoryButton
+   for the pending-state progress sweep. */
+@keyframes progress-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(400%);
+  }
+}
+
+.progress-sweep {
+  animation: progress-sweep 1.2s ease-in-out infinite;
+}

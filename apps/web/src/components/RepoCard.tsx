@@ -18,7 +18,7 @@ export default function RepoCard({ repo }: RepoCardProps) {
   return (
     <Link
       href={`/repositories/${repo.id}`}
-      className="group flex flex-col rounded-md border border-panel-border bg-panel transition-colors hover:border-phosphor-dim hover:shadow-[0_0_26px_rgba(61,255,143,0.08)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2"
+      className="group flex flex-col rounded-md border border-panel-border bg-panel transition-colors hover:border-phosphor-dim hover:shadow-[0_0_26px_rgba(61,255,143,0.08)] focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2"
     >
       <div className="flex items-center justify-between border-b border-panel-border px-4 py-3 font-mono-ui text-[11px] tracking-wide text-paper-dim">
         <span className="flex min-w-0 items-center gap-2">

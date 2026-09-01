@@ -1,4 +1,4 @@
-import { prisma } from "database/client";
+import {  prisma } from "database/client";
 import { LlmProvider } from "./llm";
 
 /**
@@ -7,6 +7,12 @@ import { LlmProvider } from "./llm";
  * user for now — the schema supports multiple named conversations,
  * but a session-switcher UI is deliberately not built yet.
  */
+export interface MessageSource {
+  id: string;
+  filePath: string;
+  content: string;
+}
+
 export async function getOrCreateChatSession(userId: string, repositoryId: string) {
   const existing = await prisma.chatSession.findFirst({
     where: { userId, repositoryId },
@@ -33,6 +39,7 @@ export async function saveChatMessage(params: {
   content: string;
   provider?: LlmProvider;
   model?: string;
+  sources?: MessageSource[];
 }) {
   return prisma.chatMessage.create({
     data: {
@@ -41,6 +48,7 @@ export async function saveChatMessage(params: {
       content: params.content,
       provider: params.provider ?? null,
       model: params.model ?? null,
+      sources: params.sources ?? undefined,
     },
   });
 }
