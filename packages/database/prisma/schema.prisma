@@ -99,6 +99,7 @@ model Repository {
   indexStatus      String    @default("NOT_INDEXED") @map("index_status")
   activeIndexRunId String?   @map("active_index_run_id")
   lastIndexedAt    DateTime? @map("last_indexed_at")
+  lastSyncedAt  DateTime? @map("last_synced_at")
   lastIndexError   String?   @db.Text @map("last_index_error")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -170,6 +171,7 @@ model ChatMessage {
   content       String   @db.Text
   provider      String?  // "gemini" | "groq" | "openrouter" — null for user messages
   model         String?  // e.g. "gemini-2.0-flash" — null for user messages
+  sources Json? @map("sources")
   createdAt     DateTime @default(now()) @map("created_at")
 
   chatSession ChatSession @relation(fields: [chatSessionId], references: [id], onDelete: Cascade)
