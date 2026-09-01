@@ -62,14 +62,15 @@ export default function ArchitectureDiagramPanel({
     });
 
     try {
-      const svg = await mermaid.render(
+     const { svg } = await mermaid.render(
   `diagram-${diagramId}`,
   mermaidCode
 );
 
-      if (!cancelled && diagramRef.current) {
-        diagramRef.current.innerHTML = svg;
-      }
+if (!cancelled && diagramRef.current) {
+  diagramRef.current.innerHTML = svg;
+}
+
     } catch {
       if (!cancelled) {
         setRenderError(
