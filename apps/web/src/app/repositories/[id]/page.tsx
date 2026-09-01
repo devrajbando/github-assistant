@@ -298,9 +298,38 @@ export default async function RepositoryDetailPage({
           <SectionHeading label="Developer onboarding" />
 
           <DeveloperOnboarding
-            repositoryId={repository.id}
-            initialGuide={repository.onboardingGuide}
-          />
+  repositoryId={repository.id}
+  initialGuide={
+    repository.onboardingGuide
+      ? {
+          id: repository.onboardingGuide.id,
+          status:
+            repository.onboardingGuide.status as
+              | "NOT_GENERATED"
+              | "GENERATING"
+              | "GENERATED"
+              | "FAILED",
+          content: repository.onboardingGuide.content,
+          provider: repository.onboardingGuide.provider,
+          model: repository.onboardingGuide.model,
+          lastError: repository.onboardingGuide.lastError,
+          generatedAt:
+            repository.onboardingGuide.generatedAt?.toISOString() ?? null,
+          checklistItems:
+            repository.onboardingGuide.checklistItems.map((item) => ({
+              id: item.id,
+              order: item.order,
+              key: item.key,
+              category: item.category,
+              title: item.title,
+              description: item.description,
+              isCompleted: item.isCompleted,
+              completedAt: item.completedAt?.toISOString() ?? null,
+            })),
+        }
+      : null
+  }
+/>
         </section>
 
         {/* Architecture */}
@@ -337,6 +366,7 @@ export default async function RepositoryDetailPage({
 
           <RepoSearch
             repositoryId={repository.id}
+            indexStatus={repository.indexStatus as IndexStatus}
           />
         </section>
       </div>

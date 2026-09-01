@@ -1,4 +1,4 @@
-import {  prisma } from "database/client";
+import { prisma } from "database/client";
 import { LlmProvider } from "./llm";
 
 /**
@@ -48,7 +48,10 @@ export async function saveChatMessage(params: {
       content: params.content,
       provider: params.provider ?? null,
       model: params.model ?? null,
-      sources: params.sources ?? undefined,
+      sources:
+      params.sources === undefined
+    ? undefined
+    : JSON.parse(JSON.stringify(params.sources)),
     },
   });
 }
