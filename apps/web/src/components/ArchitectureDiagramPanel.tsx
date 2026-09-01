@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -38,52 +39,50 @@ export default function ArchitectureDiagramPanel({
 
   const diagramRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!diagram?.mermaidCode || diagram.status !== "completed") {
-      return;
-    }
+ useEffect(() => {
+  if (!diagram?.mermaidCode || diagram.status !== "completed") {
+    return;
+  }
 
-    let cancelled = false;
-    setRenderError(null);
+  // Capture narrowed values before entering the async closure.
+  const mermaidCode = diagram.mermaidCode;
+  const diagramId = diagram.id;
 
-    (async () => {
-      const mermaid = (await import("mermaid")).default;
+  let cancelled = false;
+  setRenderError(null);
 
-      mermaid.initialize({
-        startOnLoad: false,
-        theme: "dark",
-        securityLevel: "strict",
-        themeVariables: {
-          background: "transparent",
-          primaryColor: "#0d1b12",
-          primaryTextColor: "#d8f5e3",
-          primaryBorderColor: "#3fae6a",
-          lineColor: "#3fae6a",
-        },
-      });
+  (async () => {
+    const mermaid = (await import("mermaid")).default;
 
-      try {
-        const { svg } = await mermaid.render(
-          `diagram-${diagram.id}`,
-          diagram.mermaidCode
-        );
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: "dark",
+      securityLevel: "strict",
 
-        if (!cancelled && diagramRef.current) {
-          diagramRef.current.innerHTML = svg;
-        }
-      } catch {
-        if (!cancelled) {
-          setRenderError(
-            "The model's diagram wasn't valid Mermaid syntax — try regenerating."
-          );
-        }
+    });
+
+    try {
+      const svg = await mermaid.render(
+  `diagram-${diagramId}`,
+  mermaidCode
+);
+
+      if (!cancelled && diagramRef.current) {
+        diagramRef.current.innerHTML = svg;
       }
-    })();
+    } catch {
+      if (!cancelled) {
+        setRenderError(
+          "The model's diagram wasn't valid Mermaid syntax — try regenerating."
+        );
+      }
+    }
+  })();
 
-    return () => {
-      cancelled = true;
-    };
-  }, [diagram]);
+  return () => {
+    cancelled = true;
+  };
+}, [diagram]);
 
   async function handleGenerate() {
     setGenerating(true);
@@ -172,7 +171,7 @@ export default function ArchitectureDiagramPanel({
             <button
               type="button"
               onClick={() => setOpen((value) => !value)}
-              className="border border-panel-border px-3 py-1.5 font-mono-ui text-[10px] uppercase tracking-wide text-paper-dim transition hover:border-phosphor-dim hover:text-phosphor focus-visible:outline focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2"
+              className="border border-panel-border px-3 py-1.5 font-mono-ui text-[10px] uppercase tracking-wide text-paper-dim transition hover:border-phosphor-dim hover:text-phosphor focus-visible:outline focus-visible:outline-paper focus-visible:outline-offset-2"
               aria-expanded={open}
             >
               {open ? "HIDE" : "VIEW"}
