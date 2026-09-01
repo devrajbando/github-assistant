@@ -17,8 +17,8 @@ const EXCLUDED_FILENAMES = new Set(["package-lock.json", "yarn.lock", "pnpm-lock
 const MAX_FILE_SIZE_BYTES = 200_000;
 const CHUNK_LINES = 60;
 const CHUNK_OVERLAP_LINES = 10;
-const EMBED_BATCH_SIZE = 5;
-const DELAY_BETWEEN_BATCHES_MS = 15000;
+const EMBED_BATCH_SIZE = 50;
+const DELAY_BETWEEN_BATCHES_MS = 1000;
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));

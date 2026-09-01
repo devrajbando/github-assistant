@@ -13,7 +13,11 @@ function isRateLimitError(err: unknown): boolean {
   const message = err instanceof Error ? err.message : String(err);
   return message.includes("429") || message.includes("RESOURCE_EXHAUSTED");
 }
+function isDailyQuotaError(err: unknown): boolean {
+  const message = err instanceof Error ? err.message : String(err);
 
+  return message.includes("PerDayPerProjectPerModel");
+}
 /**
  * Embeds a batch of texts using Gemini's embedding model.
  * taskType matters: RETRIEVAL_DOCUMENT for content being indexed,
@@ -57,6 +61,11 @@ export async function embedTexts(
         return e.values;
       });
     } catch (err) {
+      if (isDailyQuotaError(err)) {
+        throw new Error(
+          "Gemini embedding daily quota exhausted. Try again after the quota resets."
+        );
+      }
       if (isRateLimitError(err) && attempt < MAX_RETRIES) {
         const delay = BASE_DELAY_MS * 2 ** attempt;
         await sleep(delay);
